@@ -1,0 +1,7 @@
+name: HuanshiLib
+version: 1.0
+main: org.huanshi.mc.lib.Plugin
+api-version: 1.19
+softdepend: [HuanshiCore, HuanshiRpg]
+depend: [ProtocolLib]
+authors: [Jalexdalv]
