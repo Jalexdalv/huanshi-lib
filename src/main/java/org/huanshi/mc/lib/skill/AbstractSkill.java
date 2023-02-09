@@ -58,6 +58,7 @@ public abstract class AbstractSkill {
                             finish(uuid);
                         }
                     }
+                    player.sendMessage(Zh.CANNOT_CAST);
                     return false;
                 },
                 restTime -> timerRunHandler == null || timerRunHandler.handle(restTime)
