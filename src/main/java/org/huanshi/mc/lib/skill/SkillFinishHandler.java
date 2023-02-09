@@ -1,5 +1,5 @@
 package org.huanshi.mc.lib.skill;
 
-public interface ChargeStartHandler {
+public interface SkillFinishHandler {
     boolean handle();
 }

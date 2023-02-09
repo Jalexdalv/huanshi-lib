@@ -11,14 +11,13 @@ import org.jetbrains.annotations.NotNull;
 import java.util.UUID;
 
 public class StatusUtils {
-    private static final SyncTimer STUN_TIMER = new SyncTimer();
-    private static final CdTimer ROOT_TIMER = new CdTimer(), SILENCE_TIMER = new CdTimer(), STEADY_TIMER = new CdTimer(), INVINCIBLE_TIMER = new CdTimer();
+    private static final SyncTimer STUN_TIMER = new SyncTimer(), ROOT_TIMER = new SyncTimer();
+    private static final CdTimer SILENCE_TIMER = new CdTimer(), STEADY_TIMER = new CdTimer(), INVINCIBLE_TIMER = new CdTimer();
     private static final Vector STIFF_VECTOR = new Vector(0, 0, 0), STRIKE_FLY_VECTOR = new Vector(0, 1, 0);
 
     public static void stun(@NotNull Player player, @NotNull AbstractPlugin plugin, int time, boolean force) {
         UUID uuid = player.getUniqueId();
-        STUN_TIMER.run(player.getUniqueId(), plugin, time, 1L, true, true,
-            () -> force || !isSteadying(uuid),
+        STUN_TIMER.run(uuid, plugin, time, 1L, true, null,
             () -> {
                 if (force || !isSteadying(uuid)) {
                     player.setWalkSpeed(0);
@@ -45,18 +44,20 @@ public class StatusUtils {
         return STUN_TIMER.isRunning(uuid);
     }
 
-    public static void root(@NotNull Player player, int time, boolean ignore) {
+    public static void root(@NotNull Player player, @NotNull AbstractPlugin plugin, int time, boolean force) {
         UUID uuid = player.getUniqueId();
-        ROOT_TIMER.run(player, time, true, true,
-            () -> ignore || !isSteadying(uuid),
+        ROOT_TIMER.run(uuid, plugin, time, 1L, true, null,
             () -> {
-                if (ignore || !isSteadying(uuid)) {
+                if (force || !isSteadying(uuid)) {
                     player.setWalkSpeed(0);
                     return true;
                 }
                 return false;
-            },
-            null
+            }, null,
+            () -> {
+                player.setWalkSpeed(0.2F);
+                return true;
+            }
         );
     }
 
@@ -69,7 +70,7 @@ public class StatusUtils {
     }
 
     public static void silence(@NotNull Player player, int time) {
-        SILENCE_TIMER.run(player, time, true, true, null, null, null);
+        SILENCE_TIMER.run(player, time, true, null, null, null);
     }
 
     public static void clearSilence(@NotNull UUID uuid) {
@@ -81,7 +82,7 @@ public class StatusUtils {
     }
 
     public static void steady(@NotNull Player player, int time) {
-        STEADY_TIMER.run(player, time, true, true, null, null, null);
+        STEADY_TIMER.run(player, time, true, null, null, null);
     }
 
     public static void clearSteady(@NotNull UUID uuid) {
@@ -93,7 +94,7 @@ public class StatusUtils {
     }
 
     public static void invincible(@NotNull Player player, int time) {
-        INVINCIBLE_TIMER.run(player, time, true, true, null, null, null);
+        INVINCIBLE_TIMER.run(player, time, true, null, null, null);
     }
 
     public static void clearInvincible(@NotNull UUID uuid) {

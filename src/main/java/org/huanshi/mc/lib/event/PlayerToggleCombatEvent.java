@@ -8,11 +8,11 @@ import org.jetbrains.annotations.NotNull;
 public class PlayerToggleCombatEvent extends Event {
     private static final HandlerList HANDLER_LIST = new HandlerList();
     private final Player player;
-    private final boolean isCombating;
+    private final boolean combating;
 
-    public PlayerToggleCombatEvent(@NotNull Player player, boolean isCombating) {
+    public PlayerToggleCombatEvent(@NotNull Player player, boolean combating) {
         this.player = player;
-        this.isCombating = isCombating;
+        this.combating = combating;
     }
 
     public static @NotNull HandlerList getHandlerList() {
@@ -29,6 +29,6 @@ public class PlayerToggleCombatEvent extends Event {
     }
 
     public boolean isCombating() {
-        return isCombating;
+        return combating;
     }
 }

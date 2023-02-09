@@ -37,24 +37,28 @@ public abstract class AbstractSkill {
 
     public abstract void cast(@NotNull Player player);
 
-    protected void run(@NotNull Player player, int cd, boolean isStunning, boolean isRooting, boolean isSilencing, @NotNull Title title, @Nullable TimerStartHandler timerStartHandler, @Nullable TimerRunHandler timerRunHandler) {
+    protected void run(@NotNull Player player, int cd, @NotNull Title title, @Nullable TimerStartHandler timerStartHandler, @NotNull SkillRunHandler skillRunHandler, @Nullable TimerRunHandler timerRunHandler) {
         UUID uuid = player.getUniqueId();
-        if ((!isStunning && StatusUtils.isStunning(uuid)) || (!isRooting && StatusUtils.isRooting(uuid)) || (!isSilencing && StatusUtils.isSilencing(uuid))) {
-            player.sendMessage(Zh.CANNOT_CAST);
-        } else if (CAST_MAP.containsKey(uuid)) {
+//        if ((!stun && StatusUtils.isStunning(uuid)) || (!root && StatusUtils.isRooting(uuid)) || (!silence && StatusUtils.isSilencing(uuid))) {
+//            player.sendMessage(Zh.CANNOT_CAST);
+//        } else
+        if (CAST_MAP.containsKey(uuid)) {
             player.sendMessage(Zh.CASTING);
         } else {
-            cdTimer.run(player, cd, false, false, null,
+            cdTimer.run(player, cd, false, null,
                 () -> {
-                    try {
+                    if (timerStartHandler == null || timerStartHandler.handle()) {
                         CAST_MAP.put(uuid, this);
                         Bukkit.getPluginManager().callEvent(new SkillCastEvent(player, this));
                         player.clearTitle();
                         player.showTitle(title);
-                        return timerStartHandler == null || timerStartHandler.handle();
-                    } finally {
-                        finish(uuid);
+                        try {
+                            return skillRunHandler.handle();
+                        } finally {
+                            finish(uuid);
+                        }
                     }
+                    return false;
                 },
                 restTime -> timerRunHandler == null || timerRunHandler.handle(restTime)
             );
@@ -93,19 +97,19 @@ public abstract class AbstractSkill {
         }
     }
 
-    protected void charge(@NotNull Player player, int repeat, long period, int accelerateRepeat, double velocity, @Nullable ChargeStartHandler chargeStartHandler, @Nullable ChargeRunHandler chargeRunHandler, @Nullable ChargeFinishHandler chargeFinishHandler, @Nullable ChargeStartHandler accelerateStartHandler, @Nullable ChargeRunHandler accelerateRunHandler, @Nullable ChargeFinishHandler accelerateFinishHandler) {
+    protected void charge(@NotNull Player player, int repeat, long period, int accelerateRepeat, double velocity, @Nullable SkillStartHandler skillStartHandler, @Nullable SkillRunHandler skillRunHandler, @Nullable SkillFinishHandler skillFinishHandler, @Nullable SkillStartHandler accelerateStartHandler, @Nullable SkillRunHandler accelerateRunHandler, @Nullable SkillFinishHandler accelerateFinishHandler) {
         AtomicInteger atomicInteger = new AtomicInteger(repeat);
-        if (chargeStartHandler == null || chargeStartHandler.handle()) {
+        if (skillStartHandler == null || skillStartHandler.handle()) {
             new BukkitRunnable() {
                 @Override
                 public void run() {
                     if (atomicInteger.getAndDecrement() > 0) {
-                        if (chargeRunHandler == null || chargeRunHandler.handle()) {
+                        if (skillRunHandler == null || skillRunHandler.handle()) {
                             charge(player, accelerateRepeat, velocity, accelerateStartHandler, accelerateRunHandler, accelerateFinishHandler);
                             return;
                         }
                     }
-                    if (chargeFinishHandler == null || chargeFinishHandler.handle()) {
+                    if (skillFinishHandler == null || skillFinishHandler.handle()) {
                         cancel();
                     }
                 }
@@ -113,21 +117,41 @@ public abstract class AbstractSkill {
         }
     }
 
-    protected void charge(@NotNull Player player, int repeat, double velocity, @Nullable ChargeStartHandler chargeStartHandler, @Nullable ChargeRunHandler chargeRunHandler, @Nullable ChargeFinishHandler chargeFinishHandler) {
-        Vector vector = player.getLocation().getDirection().normalize().multiply(velocity).setY(0.0D);
+    protected void charge(@NotNull Player player, int repeat, double velocity, @Nullable SkillStartHandler skillStartHandler, @Nullable SkillRunHandler skillRunHandler, @Nullable SkillFinishHandler skillFinishHandler) {
+        Vector vector = player.getLocation().getDirection().multiply(velocity).setY(0.0D);
         AtomicInteger atomicInteger = new AtomicInteger(repeat);
-        if (chargeStartHandler == null || chargeStartHandler.handle()) {
+        if (skillStartHandler == null || skillStartHandler.handle()) {
             new BukkitRunnable() {
                 @Override
                 public void run() {
                     if (atomicInteger.getAndDecrement() > 0) {
-                        if (chargeRunHandler == null || chargeRunHandler.handle()) {
+                        if (skillRunHandler == null || skillRunHandler.handle()) {
                             player.setVelocity(vector);
                             return;
                         }
                     }
-                    if (chargeFinishHandler == null || chargeFinishHandler.handle()) {
+                    if (skillFinishHandler == null || skillFinishHandler.handle()) {
                         StatusUtils.stiff(player);
+                        cancel();
+                    }
+                }
+            }.runTaskTimer(plugin, 0L, 1L);
+        }
+    }
+
+    protected void rotation(@NotNull Player player, int repeat, float yaw, @Nullable SkillStartHandler skillStartHandler, @Nullable SkillRunHandler skillRunHandler, @Nullable SkillFinishHandler skillFinishHandler) {
+        AtomicInteger atomicInteger = new AtomicInteger(repeat);
+        if (skillStartHandler == null || skillStartHandler.handle()) {
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    if (atomicInteger.getAndDecrement() > 0) {
+                        if (skillRunHandler == null || skillRunHandler.handle()) {
+                            player.setRotation(player.getLocation().getYaw() + yaw, 0.0F);
+                            return;
+                        }
+                    }
+                    if (skillFinishHandler == null || skillFinishHandler.handle()) {
                         cancel();
                     }
                 }

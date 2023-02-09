@@ -26,9 +26,9 @@ public class CombatService extends AbstractService {
 
     public void enter(@NotNull Player player) {
         UUID uuid = player.getUniqueId();
-        asyncTimer.run(uuid, plugin, time, 20L, true, false, null,
+        asyncTimer.run(uuid, plugin, time, 20L, true, null,
             () -> {
-                Bukkit.getScheduler().runTask(plugin, () -> Bukkit.getServer().getPluginManager().callEvent(new PlayerToggleCombatEvent(player, true)));
+                Bukkit.getScheduler().runTask(plugin, () -> Bukkit.getPluginManager().callEvent(new PlayerToggleCombatEvent(player, true)));
                 bossBarMap.putIfAbsent(uuid, BossBar.bossBar(Zh.combat(time), 1F, BossBar.Color.RED, BossBar.Overlay.PROGRESS));
                 return true;
             },
@@ -37,7 +37,7 @@ public class CombatService extends AbstractService {
                 return true;
             },
             () -> {
-                Bukkit.getScheduler().runTask(plugin, () -> Bukkit.getServer().getPluginManager().callEvent(new PlayerToggleCombatEvent(player, false)));
+                Bukkit.getScheduler().runTask(plugin, () -> Bukkit.getPluginManager().callEvent(new PlayerToggleCombatEvent(player, false)));
                 player.hideBossBar(bossBarMap.get(uuid));
                 return true;
             }

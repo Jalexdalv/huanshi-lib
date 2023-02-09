@@ -28,10 +28,10 @@ public class PlayerCommandPreprocessListener extends AbstractListener {
                     String[] messages = StringUtils.split(playerCommandPreprocessEvent.getMessage(), " ");
                     if (!plugin.isCommand(StringUtils.replaceOnce(messages[0], "/", ""))) {
                         playerCommandPreprocessEvent.setCancelled(true);
-                        playerCommandPreprocessEvent.getPlayer().sendMessage(Zh.UNKNOWN_COMMAND);
-                        return false;
+                        player.sendMessage(Zh.UNKNOWN_COMMAND);
+                    } else {
+                        return true;
                     }
-                    return true;
                 }
                 return false;
             },

@@ -14,14 +14,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SyncTimer {
     private final Map<UUID, Integer> restTimeMap = new ConcurrentHashMap<>();
 
-    public void run(@NotNull UUID uuid, @NotNull AbstractPlugin plugin, int cd, long period, boolean isRestart, boolean isOverlying, @Nullable TimerRestartStartHandler timerRestartHandler, @Nullable TimerStartHandler timerStartHandler, @Nullable TimerRunHandler timerRunHandler, @Nullable TimerFinishHandler timerFinishHandler) {
+    public void run(@NotNull UUID uuid, @NotNull AbstractPlugin plugin, int cd, long period, boolean isRestart, @Nullable TimerRestartStartHandler timerRestartHandler, @Nullable TimerStartHandler timerStartHandler, @Nullable TimerRunHandler timerRunHandler, @Nullable TimerFinishHandler timerFinishHandler) {
         if (restTimeMap.containsKey(uuid)) {
             if (isRestart && (timerRestartHandler == null || timerRestartHandler.handle())) {
-                if (isOverlying) {
-                    restTimeMap.merge(uuid, cd, Integer::sum);
-                } else {
-                    restTimeMap.put(uuid, cd);
-                }
+                restTimeMap.merge(uuid, cd, Integer::max);
             }
         } else if (timerStartHandler == null || timerStartHandler.handle()) {
             restTimeMap.put(uuid, cd);

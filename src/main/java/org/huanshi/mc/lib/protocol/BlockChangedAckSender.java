@@ -18,7 +18,7 @@ public class BlockChangedAckSender extends AbstractSender {
     private Plugin plugin;
 
     @SendHandler
-    public PacketAdapter blockChangedAck() {
+    public PacketAdapter onBlockChangedAck() {
         return new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.BLOCK_CHANGED_ACK) {
             @Override
             public void onPacketSending(PacketEvent packetEvent) {

@@ -14,7 +14,7 @@ public class EntityDamageByEntityListener extends AbstractListener {
     private CombatService combatService;
 
     @EventHandler
-    public void onEntityDamageByEntityEvent(@NotNull EntityDamageByEntityEvent entityDamageByEntityEvent) {
+    public void onEntityDamageByEntity(@NotNull EntityDamageByEntityEvent entityDamageByEntityEvent) {
         if (entityDamageByEntityEvent.getEntity() instanceof Player player) {
             combatService.enter(player);
         }

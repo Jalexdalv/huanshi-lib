@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
 public @interface Command {
     Environment environment() default Environment.ALL;
     boolean op() default false;
-    boolean combating() default true;
+    boolean combat() default true;
     String permission() default "";
     String head();
     String[] args() default {};

@@ -1,7 +1,6 @@
 package org.huanshi.mc.lib.core;
 
 import org.apache.commons.lang3.StringUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.huanshi.mc.lib.AbstractPlugin;
 import org.huanshi.mc.lib.annotation.Autowired;
@@ -15,6 +14,7 @@ import org.huanshi.mc.lib.annotation.Service;
 import org.huanshi.mc.lib.annotation.Skill;
 import org.huanshi.mc.lib.annotation.Task;
 import org.huanshi.mc.lib.command.AbstractCommand;
+import org.huanshi.mc.lib.command.Environment;
 import org.huanshi.mc.lib.config.AbstractConfig;
 import org.huanshi.mc.lib.listener.AbstractListener;
 import org.huanshi.mc.lib.mapper.AbstractMapper;
@@ -127,7 +127,7 @@ public class Loader {
             for (int i = 0, len = command.args().length; i < len; i++) {
                 command.args()[i] = StringUtils.trimToNull(command.args()[i]);
             }
-            loadCommand(entry.getKey(), plugin, command.op(), StringUtils.trimToNull(command.permission()), command.combating(), StringUtils.trimToNull(command.command()), command.args());
+            loadCommand(entry.getKey(), plugin, command.environment(), command.op(), command.combat(), StringUtils.trimToNull(command.permission()), StringUtils.trimToNull(command.head()), command.args());
         }
         for (Class<?> clazz : taskClassSet) {
             loadTask(clazz, plugin);
@@ -172,8 +172,7 @@ public class Loader {
                     } else if (AbstractConfig.class.isAssignableFrom(field.getType())) {
                         field.set(sender, configMap.get(field.getType()));
                     } else if (Location.class == field.getType()) {
-                        AbstractConfig config = configFileMap.get(autowired.file());
-                        field.set(sender, new Location(Bukkit.getWorld(config.getString(autowired.path()[0])), config.getDouble(autowired.path()[1]), config.getDouble(autowired.path()[1]), config.getDouble(autowired.path()[1])));
+                        field.set(sender, configFileMap.get(autowired.file()).getLocation(autowired.path()[0]));
                     } else if (String.class == field.getType()) {
                         field.set(sender, configFileMap.get(autowired.file()).getString(autowired.path()[0]));
                     } else if (List.class == field.getType()) {
@@ -212,8 +211,7 @@ public class Loader {
                     } else if (AbstractConfig.class.isAssignableFrom(field.getType())) {
                         field.set(receiver, configMap.get(field.getType()));
                     } else if (Location.class == field.getType()) {
-                        AbstractConfig config = configFileMap.get(autowired.file());
-                        field.set(receiver, new Location(Bukkit.getWorld(config.getString(autowired.path()[0])), config.getDouble(autowired.path()[1]), config.getDouble(autowired.path()[1]), config.getDouble(autowired.path()[1])));
+                        field.set(receiver, configFileMap.get(autowired.file()).getLocation(autowired.path()[0]));
                     } else if (String.class == field.getType()) {
                         field.set(receiver, configFileMap.get(autowired.file()).getString(autowired.path()[0]));
                     } else if (List.class == field.getType()) {
@@ -252,8 +250,7 @@ public class Loader {
                     } else if (AbstractConfig.class.isAssignableFrom(field.getType())) {
                         field.set(mapper, configMap.get(field.getType()));
                     } else if (Location.class == field.getType()) {
-                        AbstractConfig config = configFileMap.get(autowired.file());
-                        field.set(mapper, new Location(Bukkit.getWorld(config.getString(autowired.path()[0])), config.getDouble(autowired.path()[1]), config.getDouble(autowired.path()[1]), config.getDouble(autowired.path()[1])));
+                        field.set(mapper, configFileMap.get(autowired.file()).getLocation(autowired.path()[0]));
                     } else if (String.class == field.getType()) {
                         field.set(mapper, configFileMap.get(autowired.file()).getString(autowired.path()[0]));
                     } else if (List.class == field.getType()) {
@@ -297,8 +294,7 @@ public class Loader {
                     } else if (AbstractSender.class.isAssignableFrom(field.getType())) {
                         field.set(service, senderMap.get(field.getType()));
                     } else if (Location.class == field.getType()) {
-                        AbstractConfig config = configFileMap.get(autowired.file());
-                        field.set(service, new Location(Bukkit.getWorld(config.getString(autowired.path()[0])), config.getDouble(autowired.path()[1]), config.getDouble(autowired.path()[1]), config.getDouble(autowired.path()[1])));
+                        field.set(service, configFileMap.get(autowired.file()).getLocation(autowired.path()[0]));
                     } else if (String.class == field.getType()) {
                         field.set(service, configFileMap.get(autowired.file()).getString(autowired.path()[0]));
                     } else if (List.class == field.getType()) {
@@ -339,8 +335,7 @@ public class Loader {
                     } else if (AbstractService.class.isAssignableFrom(field.getType())) {
                         field.set(skill, serviceMap.get(field.getType()));
                     } else if (Location.class == field.getType()) {
-                        AbstractConfig config = configFileMap.get(autowired.file());
-                        field.set(skill, new Location(Bukkit.getWorld(config.getString(autowired.path()[0])), config.getDouble(autowired.path()[1]), config.getDouble(autowired.path()[1]), config.getDouble(autowired.path()[1])));
+                        field.set(skill, configFileMap.get(autowired.file()).getLocation(autowired.path()[0]));
                     } else if (String.class == field.getType()) {
                         field.set(skill, configFileMap.get(autowired.file()).getString(autowired.path()[0]));
                     } else if (List.class == field.getType()) {
@@ -362,7 +357,7 @@ public class Loader {
         }
     }
 
-    private static void loadCommand(@NotNull Class<?> clazz, @NotNull AbstractPlugin plugin, boolean op, @NotNull String permission, boolean isCombating, @NotNull String head, @NotNull String @NotNull [] args) throws Throwable {
+    private static void loadCommand(@NotNull Class<?> clazz, @NotNull AbstractPlugin plugin, @NotNull Environment environment, boolean op, boolean combat, @NotNull String permission, @NotNull String head, @NotNull String @NotNull [] args) throws Throwable {
         Class<?> pluginClass = plugin.getClass();
         Map<Class<?>, AbstractCommand> commandMap = LOADED_COMMAND_MAP.computeIfAbsent(pluginClass, key -> new HashMap<>());
         if (!commandMap.containsKey(clazz)) {
@@ -381,8 +376,7 @@ public class Loader {
                     } else if (AbstractService.class.isAssignableFrom(field.getType())) {
                         field.set(command, serviceMap.get(field.getType()));
                     } else if (Location.class == field.getType()) {
-                        AbstractConfig config = configFileMap.get(autowired.file());
-                        field.set(command, new Location(Bukkit.getWorld(config.getString(autowired.path()[0])), config.getDouble(autowired.path()[1]), config.getDouble(autowired.path()[1]), config.getDouble(autowired.path()[1])));
+                        field.set(command, configFileMap.get(autowired.file()).getLocation(autowired.path()[0]));
                     } else if (String.class == field.getType()) {
                         field.set(command, configFileMap.get(autowired.file()).getString(autowired.path()[0]));
                     } else if (List.class == field.getType()) {
@@ -398,7 +392,7 @@ public class Loader {
                     }
                 }
             }
-            command.load(op, permission, isCombating, head, args);
+            command.load(environment, op, combat, permission, head, args);
             command.register();
             commandMap.put(clazz, command);
             if (op) {
@@ -429,8 +423,7 @@ public class Loader {
                     } else if (AbstractService.class.isAssignableFrom(field.getType())) {
                         field.set(task, serviceMap.get(field.getType()));
                     } else if (Location.class == field.getType()) {
-                        AbstractConfig config = configFileMap.get(autowired.file());
-                        field.set(task, new Location(Bukkit.getWorld(config.getString(autowired.path()[0])), config.getDouble(autowired.path()[1]), config.getDouble(autowired.path()[1]), config.getDouble(autowired.path()[1])));
+                        field.set(task, configFileMap.get(autowired.file()).getLocation(autowired.path()[0]));
                     } else if (String.class == field.getType()) {
                         field.set(task, configFileMap.get(autowired.file()).getString(autowired.path()[0]));
                     } else if (List.class == field.getType()) {
@@ -475,8 +468,7 @@ public class Loader {
                     } else if (AbstractSkill.class.isAssignableFrom(field.getType())) {
                         field.set(listener, skillMap.get(field.getType()));
                     } else if (Location.class == field.getType()) {
-                        AbstractConfig config = configFileMap.get(autowired.file());
-                        field.set(listener, new Location(Bukkit.getWorld(config.getString(autowired.path()[0])), config.getDouble(autowired.path()[1]), config.getDouble(autowired.path()[1]), config.getDouble(autowired.path()[1])));
+                        field.set(listener, configFileMap.get(autowired.file()).getLocation(autowired.path()[0]));
                     } else if (String.class == field.getType()) {
                         field.set(listener, configFileMap.get(autowired.file()).getString(autowired.path()[0]));
                     } else if (List.class == field.getType()) {
