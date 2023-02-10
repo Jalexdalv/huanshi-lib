@@ -78,4 +78,8 @@ public abstract class AbstractConfig {
     public double getDouble(@NotNull String path) {
         return configuration.getDouble(path);
     }
+
+    public float getFloat(@NotNull String path) {
+        return (float) configuration.getDouble(path);
+    }
 }

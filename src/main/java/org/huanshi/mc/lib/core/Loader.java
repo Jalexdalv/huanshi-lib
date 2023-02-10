@@ -185,6 +185,8 @@ public class Loader {
                         field.set(sender, configFileMap.get(autowired.file()).getInt(autowired.path()[0]));
                     } else if (double.class == field.getType()) {
                         field.set(sender, configFileMap.get(autowired.file()).getDouble(autowired.path()[0]));
+                    } else if (float.class == field.getType()) {
+                        field.set(sender, configFileMap.get(autowired.file()).getFloat(autowired.path()[0]));
                     }
                 }
             }
@@ -224,6 +226,8 @@ public class Loader {
                         field.set(receiver, configFileMap.get(autowired.file()).getInt(autowired.path()[0]));
                     } else if (double.class == field.getType()) {
                         field.set(receiver, configFileMap.get(autowired.file()).getDouble(autowired.path()[0]));
+                    } else if (float.class == field.getType()) {
+                        field.set(receiver, configFileMap.get(autowired.file()).getFloat(autowired.path()[0]));
                     }
                 }
             }
@@ -263,6 +267,8 @@ public class Loader {
                         field.set(mapper, configFileMap.get(autowired.file()).getInt(autowired.path()[0]));
                     } else if (double.class == field.getType()) {
                         field.set(mapper, configFileMap.get(autowired.file()).getDouble(autowired.path()[0]));
+                    } else if (float.class == field.getType()) {
+                        field.set(mapper, configFileMap.get(autowired.file()).getFloat(autowired.path()[0]));
                     }
                 }
             }
@@ -307,6 +313,8 @@ public class Loader {
                         field.set(service, configFileMap.get(autowired.file()).getInt(autowired.path()[0]));
                     } else if (double.class == field.getType()) {
                         field.set(service, configFileMap.get(autowired.file()).getDouble(autowired.path()[0]));
+                    } else if (float.class == field.getType()) {
+                        field.set(service, configFileMap.get(autowired.file()).getFloat(autowired.path()[0]));
                     }
                 }
             }
@@ -348,6 +356,8 @@ public class Loader {
                         field.set(skill, configFileMap.get(autowired.file()).getInt(autowired.path()[0]));
                     } else if (double.class == field.getType()) {
                         field.set(skill, configFileMap.get(autowired.file()).getDouble(autowired.path()[0]));
+                    } else if (float.class == field.getType()) {
+                        field.set(skill, configFileMap.get(autowired.file()).getFloat(autowired.path()[0]));
                     }
                 }
             }
@@ -389,6 +399,8 @@ public class Loader {
                         field.set(command, configFileMap.get(autowired.file()).getInt(autowired.path()[0]));
                     } else if (double.class == field.getType()) {
                         field.set(command, configFileMap.get(autowired.file()).getDouble(autowired.path()[0]));
+                    } else if (float.class == field.getType()) {
+                        field.set(command, configFileMap.get(autowired.file()).getFloat(autowired.path()[0]));
                     }
                 }
             }
@@ -436,6 +448,8 @@ public class Loader {
                         field.set(task, configFileMap.get(autowired.file()).getInt(autowired.path()[0]));
                     } else if (double.class == field.getType()) {
                         field.set(task, configFileMap.get(autowired.file()).getDouble(autowired.path()[0]));
+                    } else if (float.class == field.getType()) {
+                        field.set(task, configFileMap.get(autowired.file()).getFloat(autowired.path()[0]));
                     }
                 }
             }
@@ -481,6 +495,8 @@ public class Loader {
                         field.set(listener, configFileMap.get(autowired.file()).getInt(autowired.path()[0]));
                     } else if (double.class == field.getType()) {
                         field.set(listener, configFileMap.get(autowired.file()).getDouble(autowired.path()[0]));
+                    } else if (float.class == field.getType()) {
+                        field.set(listener, configFileMap.get(autowired.file()).getFloat(autowired.path()[0]));
                     }
                 }
             }
