@@ -15,20 +15,18 @@ public class StatusUtils {
     private static final CdTimer SILENCE_TIMER = new CdTimer(), STEADY_TIMER = new CdTimer(), INVINCIBLE_TIMER = new CdTimer();
     private static final Vector STIFF_VECTOR = new Vector(0, 0, 0), STRIKE_FLY_VECTOR = new Vector(0, 1, 0);
 
-    public static void stun(@NotNull Player player, @NotNull AbstractPlugin plugin, int time, boolean force) {
+    public static void stun(@NotNull Player player, @NotNull AbstractPlugin plugin, long time, boolean force) {
         UUID uuid = player.getUniqueId();
-        STUN_TIMER.run(uuid, plugin, time, 1L, true, null,
+        STUN_TIMER.run(uuid, plugin, time, 1L, true,
+            () -> force || !isSteadying(uuid),
             () -> {
                 if (force || !isSteadying(uuid)) {
-                    player.setWalkSpeed(0);
+                    player.setWalkSpeed(0.0F);
                     return true;
                 }
                 return false;
             },
-            restTime -> {
-                player.setRotation(0, 90);
-                return true;
-            },
+            restTime -> player.setRotation(0.0F, 90.0F),
             () -> {
                 player.setWalkSpeed(0.2F);
                 return true;
@@ -44,12 +42,13 @@ public class StatusUtils {
         return STUN_TIMER.isRunning(uuid);
     }
 
-    public static void root(@NotNull Player player, @NotNull AbstractPlugin plugin, int time, boolean force) {
+    public static void root(@NotNull Player player, @NotNull AbstractPlugin plugin, long time, boolean force) {
         UUID uuid = player.getUniqueId();
-        ROOT_TIMER.run(uuid, plugin, time, 1L, true, null,
+        ROOT_TIMER.run(uuid, plugin, time, time, true,
+            () -> force || !isSteadying(uuid),
             () -> {
                 if (force || !isSteadying(uuid)) {
-                    player.setWalkSpeed(0);
+                    player.setWalkSpeed(0.0F);
                     return true;
                 }
                 return false;
@@ -69,7 +68,7 @@ public class StatusUtils {
         return ROOT_TIMER.isRunning(uuid);
     }
 
-    public static void silence(@NotNull Player player, int time) {
+    public static void silence(@NotNull Player player, long time) {
         SILENCE_TIMER.run(player, time, true, null, null, null);
     }
 
@@ -81,7 +80,7 @@ public class StatusUtils {
         return SILENCE_TIMER.isRunning(uuid);
     }
 
-    public static void steady(@NotNull Player player, int time) {
+    public static void steady(@NotNull Player player, long time) {
         STEADY_TIMER.run(player, time, true, null, null, null);
     }
 
@@ -93,7 +92,7 @@ public class StatusUtils {
         return STEADY_TIMER.isRunning(uuid);
     }
 
-    public static void invincible(@NotNull Player player, int time) {
+    public static void invincible(@NotNull Player player, long time) {
         INVINCIBLE_TIMER.run(player, time, true, null, null, null);
     }
 
@@ -105,8 +104,8 @@ public class StatusUtils {
         return INVINCIBLE_TIMER.isRunning(uuid);
     }
 
-    public static void stiff(@NotNull LivingEntity livingEntity) {
-        livingEntity.setVelocity(STIFF_VECTOR);
+    public static void stiff(@NotNull LivingEntity livingEntity, @NotNull AbstractPlugin plugin, long time) {
+        ROOT_TIMER.run(livingEntity.getUniqueId(), plugin, time, 1L, true, null, null, restTime -> livingEntity.setVelocity(STIFF_VECTOR), null);
     }
 
     public static void strikeFly(@NotNull LivingEntity livingEntity, double velocity) {

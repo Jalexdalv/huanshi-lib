@@ -14,24 +14,35 @@ import java.util.UUID;
 public class CdTimer {
     private final Map<UUID, Long> finishTimeMap = new HashMap<>();
 
-    public void run(@NotNull Player player, int cd, boolean isRestart, @Nullable TimerRestartStartHandler timerRestartHandler, @Nullable TimerStartHandler timerStartHandler, @Nullable TimerRunHandler timerRunHandler) {
+    public void run(@NotNull Player player, long cd, @Nullable TimerStartHandler timerStartHandler, @Nullable TimerRunHandler timerRunHandler) {
         UUID uuid = player.getUniqueId();
-        Long finishTime = finishTimeMap.get(uuid);
-        if (finishTime != null) {
-            if (isRestart && (timerRestartHandler == null || timerRestartHandler.handle())) {
-                finishTimeMap.merge(uuid, System.currentTimeMillis() + cd * 1000L, Math::max);
-                return;
+        int restTime = Math.max((int) Math.ceil((double) (finishTimeMap.getOrDefault(uuid, 0L) - System.currentTimeMillis()) / (double) 1000), 0);
+        if (restTime > 0) {
+            if (timerRunHandler != null) {
+                timerRunHandler.handle(restTime);
             }
-            int restTime = Math.max((int) Math.ceil((double) (finishTime - System.currentTimeMillis()) / (double) 1000), 0);
-            if (restTime > 0) {
-                if (timerRunHandler == null || timerRunHandler.handle(restTime)) {
-                    player.sendActionBar(Zh.cd(restTime));
-                }
-                return;
-            }
+            player.sendActionBar(Zh.cd(restTime));
+        } else if (timerStartHandler == null || timerStartHandler.handle()) {
+            finishTimeMap.put(uuid, System.currentTimeMillis() + cd);
         }
-        if (timerStartHandler == null || timerStartHandler.handle()) {
-            finishTimeMap.put(uuid, System.currentTimeMillis() + cd * 1000L);
+    }
+
+    public void run(@NotNull Player player, long cd, boolean restart, @Nullable TimerReStartHandler timerReStartHandler, @Nullable TimerStartHandler timerStartHandler, @Nullable TimerRunHandler timerRunHandler) {
+        UUID uuid = player.getUniqueId();
+        int restTime = Math.max((int) Math.ceil((double) (finishTimeMap.getOrDefault(uuid, 0L) - System.currentTimeMillis()) / (double) 1000), 0);
+        if (restTime > 0) {
+            if (restart) {
+                if (timerReStartHandler == null || timerReStartHandler.handle()) {
+                    finishTimeMap.merge(uuid, System.currentTimeMillis() + cd, Math::max);
+                }
+            } else {
+                if (timerRunHandler != null) {
+                    timerRunHandler.handle(restTime);
+                }
+                player.sendActionBar(Zh.cd(restTime));
+            }
+        } else if (timerStartHandler == null || timerStartHandler.handle()) {
+            finishTimeMap.put(uuid, System.currentTimeMillis() + cd);
         }
     }
 
@@ -50,7 +61,6 @@ public class CdTimer {
     }
 
     public boolean isRunning(@NotNull UUID uuid) {
-        Long finishTime = finishTimeMap.get(uuid);
-        return finishTime != null && finishTimeMap.get(uuid) - System.currentTimeMillis() > 0;
+        return finishTimeMap.getOrDefault(uuid, 0L) - System.currentTimeMillis() > 0;
     }
 }

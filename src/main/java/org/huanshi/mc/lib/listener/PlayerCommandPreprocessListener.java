@@ -29,16 +29,14 @@ public class PlayerCommandPreprocessListener extends AbstractListener {
                     if (!plugin.isCommand(StringUtils.replaceOnce(messages[0], "/", ""))) {
                         playerCommandPreprocessEvent.setCancelled(true);
                         player.sendMessage(Zh.UNKNOWN_COMMAND);
-                    } else {
-                        return true;
                     }
+                    return true;
                 }
                 return false;
             },
             restTime -> {
                 playerCommandPreprocessEvent.setCancelled(true);
                 player.sendMessage(Zh.USE_COMMAND_FAST);
-                return false;
             }
         );
     }

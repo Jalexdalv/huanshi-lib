@@ -33,14 +33,15 @@ public abstract class AbstractConfig {
             } else {
                 configuration = YamlConfiguration.loadConfiguration(inputStreamReader);
             }
+        } finally {
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                try {
+                    save();
+                } catch (IOException ioException) {
+                    throw new RuntimeException(ioException);
+                }
+            });
         }
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            try {
-                save();
-            } catch (IOException ioException) {
-                throw new RuntimeException(ioException);
-            }
-        });
     }
 
     public void save() throws IOException {

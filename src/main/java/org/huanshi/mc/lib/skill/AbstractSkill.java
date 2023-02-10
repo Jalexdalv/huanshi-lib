@@ -16,7 +16,6 @@ import org.huanshi.mc.lib.annotation.Autowired;
 import org.huanshi.mc.lib.event.SkillCastEvent;
 import org.huanshi.mc.lib.lang.Zh;
 import org.huanshi.mc.lib.timer.CdTimer;
-import org.huanshi.mc.lib.timer.TimerRunHandler;
 import org.huanshi.mc.lib.timer.TimerStartHandler;
 import org.huanshi.mc.lib.utils.StatusUtils;
 import org.jetbrains.annotations.NotNull;
@@ -38,30 +37,29 @@ public abstract class AbstractSkill {
 
     public abstract void cast(@NotNull Player player);
 
-    protected void run(@NotNull Player player, int cd, @NotNull Title title, @Nullable TimerStartHandler timerStartHandler, @NotNull SkillRunHandler skillRunHandler, @Nullable TimerRunHandler timerRunHandler) {
+    protected void run(@NotNull Player player, int cd, @NotNull Title title, @Nullable TimerStartHandler timerStartHandler, @NotNull SkillRunHandler skillRunHandler) {
         UUID uuid = player.getUniqueId();
         if (CAST_MAP.containsKey(uuid)) {
             player.sendMessage(Zh.CASTING);
-            return;
+        } else {
+            cdTimer.run(player, cd, false, null,
+                () -> {
+                    if (timerStartHandler != null && !timerStartHandler.handle()) {
+                        player.sendMessage(Zh.CANNOT_CAST);
+                        return false;
+                    }
+                    try {
+                        CAST_MAP.put(uuid, this);
+                        Bukkit.getPluginManager().callEvent(new SkillCastEvent(player, this));
+                        player.clearTitle();
+                        player.showTitle(title);
+                        return skillRunHandler.handle();
+                    } finally {
+                        finish(uuid);
+                    }
+                }, null
+            );
         }
-        cdTimer.run(player, cd, false, null,
-            () -> {
-                if (timerStartHandler != null && !timerStartHandler.handle()) {
-                    player.sendMessage(Zh.CANNOT_CAST);
-                    return false;
-                }
-                CAST_MAP.put(uuid, this);
-                Bukkit.getPluginManager().callEvent(new SkillCastEvent(player, this));
-                player.clearTitle();
-                player.showTitle(title);
-                try {
-                    return skillRunHandler.handle();
-                } finally {
-                    finish(uuid);
-                }
-            },
-            restTime -> timerRunHandler == null || timerRunHandler.handle(restTime)
-        );
     }
 
     protected void finish(@NotNull UUID uuid) {
@@ -76,19 +74,19 @@ public abstract class AbstractSkill {
         return CAST_MAP.containsKey(uuid);
     }
 
-    protected @NotNull Location correctLocation(@NotNull Location location, double x, double y, double z) {
+    protected @NotNull Location fixLocation(@NotNull Location location, double x, double y, double z) {
         double radians = Math.toRadians(location.getYaw());
         double sin = Math.sin(radians), cos = Math.cos(radians);
         return location.clone().add(-x * cos - z * sin, y, z * cos - x * sin);
     }
 
-    protected @NotNull Vector correctDirection(@NotNull Location location, double distance) {
+    protected @NotNull Vector fixDirection(@NotNull Location location, double distance) {
         location.setPitch(0.0F);
         return location.getDirection().multiply(distance);
     }
 
     protected @NotNull BoundingBox getBoundingBox(@NotNull Location location, double x1, double y1, double z1, double x2, double y2, double z2) {
-        return BoundingBox.of(correctLocation(location, x1, y1, z1), correctLocation(location, x2, y2, z2));
+        return BoundingBox.of(fixLocation(location, x1, y1, z1), fixLocation(location, x2, y2, z2));
     }
 
     protected @NotNull Collection<Entity> getAABBEntities(@NotNull Location location, double x1, double y1, double z1, double x2, double y2, double z2) {
@@ -108,7 +106,7 @@ public abstract class AbstractSkill {
     }
 
     protected void playSectorParticle(@NotNull Location location, @NotNull Particle particle, int angle, double radius, int times, int count, double offsetX, double offsetY, double offsetZ, double speed) {
-        Vector vector = correctDirection(location, radius).rotateAroundY(Math.toRadians((double) angle / (double) 2));
+        Vector vector = fixDirection(location, radius).rotateAroundY(Math.toRadians((double) angle / (double) 2));
         int step = angle / times;
         double stepAngle = Math.toRadians(-step);
         for (int i = 0; i < angle; i = i + step) {
@@ -158,7 +156,7 @@ public abstract class AbstractSkill {
     }
 
     protected void charge(@NotNull Player player, int repeat, double velocity, @Nullable SkillStartHandler skillStartHandler, @Nullable SkillRunHandler skillRunHandler, @Nullable SkillFinishHandler skillFinishHandler) {
-        Vector vector = correctDirection(player.getLocation(), velocity);
+        Vector vector = fixDirection(player.getLocation(), velocity);
         AtomicInteger atomicInteger = new AtomicInteger(repeat);
         if (skillStartHandler == null || skillStartHandler.handle()) {
             new BukkitRunnable() {
@@ -167,7 +165,7 @@ public abstract class AbstractSkill {
                     if (atomicInteger.getAndDecrement() > 0 && (skillRunHandler == null || skillRunHandler.handle())) {
                         player.setVelocity(vector);
                     } else if (skillFinishHandler == null || skillFinishHandler.handle()) {
-                        StatusUtils.stiff(player);
+                        StatusUtils.stiff(player, plugin, 150L);
                         cancel();
                     }
                 }
