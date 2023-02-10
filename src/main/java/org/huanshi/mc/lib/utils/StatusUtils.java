@@ -189,7 +189,7 @@ public class StatusUtils {
      */
     public static void stiff(@NotNull AbstractPlugin plugin, @NotNull Player player, double time) {
         UUID uuid = player.getUniqueId();
-        STIFF_TIMER.run(plugin, uuid, false, true, 1, (int) Math.round(time * 20L), null,
+        STIFF_TIMER.run(plugin, uuid, false, true, 1, (int) Math.round(time * 20), null,
             () -> {
                 player.setWalkSpeed(0.0F);
                 return true;
