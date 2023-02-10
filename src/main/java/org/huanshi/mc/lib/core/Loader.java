@@ -36,6 +36,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ * 加载器
+ * @author Jalexdalv
+ */
 public class Loader {
     private static final Map<Class<?>, Set<Class<?>>> SENDER_CLASS_MAP = new HashMap<>(), RECEIVER_CLASS_MAP = new HashMap<>(), MAPPER_CLASS_MAP = new HashMap<>(), SERVICE_CLASS_MAP = new HashMap<>(), SKILL_CLASS_MAP = new HashMap<>(), TASK_CLASS_MAP = new HashMap<>(), LISTENER_CLASS_MAP = new HashMap<>();
     private static final Map<Class<?>, Map<Class<?>, Config>> CONFIG_CLASS_MAP = new HashMap<>();
@@ -52,6 +56,12 @@ public class Loader {
     private static final Map<Class<?>, Map<String, AbstractConfig>> CONFIG_FILE_MAP = new HashMap<>();
     private static final Set<String> COMMAND_SET = new HashSet<>(), OP_COMMAND_SET = new HashSet<>();
 
+    /**
+     * 扫描
+     * @param plugin 插件
+     * @throws IOException 文件IO异常
+     * @throws ClassNotFoundException 无法找到指定的类异常
+     */
     public static void scan(@NotNull AbstractPlugin plugin) throws IOException, ClassNotFoundException {
         Class<?> pluginClass = plugin.getClass();
         Set<Class<?>> senderClassSet = new HashSet<>(), receiverClassSet = new HashSet<>(), mapperClassSet = new HashSet<>(), serviceClassSet = new HashSet<>(), skillClassSet = new HashSet<>(), taskClassSet = new HashSet<>(), listenerClassSet = new HashSet<>();
@@ -98,6 +108,11 @@ public class Loader {
         LISTENER_CLASS_MAP.put(pluginClass, listenerClassSet);
     }
 
+    /**
+     * 加载
+     * @param plugin 插件
+     * @throws Throwable 异常
+     */
     public static void load(@NotNull AbstractPlugin plugin) throws Throwable {
         Class<?> pluginClass = plugin.getClass();
         Set<Class<?>> senderClassSet = SENDER_CLASS_MAP.get(pluginClass), receiverClassSet = RECEIVER_CLASS_MAP.get(pluginClass), mapperClassSet = MAPPER_CLASS_MAP.get(pluginClass), serviceClassSet = SERVICE_CLASS_MAP.get(pluginClass), skillClassSet = SKILL_CLASS_MAP.get(pluginClass), taskClassSet = TASK_CLASS_MAP.get(pluginClass), listenerClassSet = LISTENER_CLASS_MAP.get(pluginClass);
@@ -137,6 +152,14 @@ public class Loader {
         }
     }
 
+    /**
+     * 加载配置
+     * @param clazz 类
+     * @param plugin 插件
+     * @param file 文件
+     * @param resource 资源
+     * @throws Throwable 异常
+     */
     private static void loadConfig(@NotNull Class<?> clazz, @NotNull AbstractPlugin plugin, @NotNull String file, @NotNull String resource) throws Throwable {
         Class<?> pluginClass = plugin.getClass();
         Map<Class<?>, AbstractConfig> configMap = LOADED_CONFIG_MAP.computeIfAbsent(pluginClass, key -> new HashMap<>());
@@ -156,6 +179,12 @@ public class Loader {
         }
     }
 
+    /**
+     * 加载数据包发送器
+     * @param clazz 类
+     * @param plugin 插件
+     * @throws Throwable 异常
+     */
     private static void loadSender(@NotNull Class<?> clazz, @NotNull AbstractPlugin plugin) throws Throwable {
         Class<?> pluginClass = plugin.getClass();
         Map<Class<?>, AbstractSender> senderMap = LOADED_SENDER_MAP.computeIfAbsent(pluginClass, key -> new HashMap<>());
@@ -197,6 +226,12 @@ public class Loader {
         }
     }
 
+    /**
+     * 加载数据包接收器
+     * @param clazz 类
+     * @param plugin 插件
+     * @throws Throwable 异常
+     */
     private static void loadReceiver(@NotNull Class<?> clazz, @NotNull AbstractPlugin plugin) throws Throwable {
         Class<?> pluginClass = plugin.getClass();
         Map<Class<?>, AbstractReceiver> receiverMap = LOADED_RECEIVER_MAP.computeIfAbsent(pluginClass, key -> new HashMap<>());
@@ -238,6 +273,12 @@ public class Loader {
         }
     }
 
+    /**
+     * 加载数据映射
+     * @param clazz 类
+     * @param plugin 插件
+     * @throws Throwable 异常
+     */
     private static void loadMapper(@NotNull Class<?> clazz, @NotNull AbstractPlugin plugin) throws Throwable {
         Class<?> pluginClass = plugin.getClass();
         Map<Class<?>, AbstractMapper> mapperMap = LOADED_MAPPER_MAP.computeIfAbsent(pluginClass, key -> new HashMap<>());
@@ -278,6 +319,12 @@ public class Loader {
         }
     }
 
+    /**
+     * 加载服务
+     * @param clazz 类
+     * @param plugin 插件
+     * @throws Throwable 异常
+     */
     private static void loadService(@NotNull Class<?> clazz, @NotNull AbstractPlugin plugin) throws Throwable {
         Class<?> pluginClass = plugin.getClass();
         Map<Class<?>, AbstractService> serviceMap = LOADED_SERVICE_MAP.computeIfAbsent(pluginClass, key -> new HashMap<>());
@@ -324,6 +371,12 @@ public class Loader {
         }
     }
 
+    /**
+     * 加载技能
+     * @param clazz 类
+     * @param plugin 插件
+     * @throws Throwable 异常
+     */
     private static void loadSkill(@NotNull Class<?> clazz, @NotNull AbstractPlugin plugin) throws Throwable {
         Class<?> pluginClass = plugin.getClass();
         Map<Class<?>, AbstractSkill> skillMap = LOADED_SKILL_MAP.computeIfAbsent(pluginClass, key -> new HashMap<>());
@@ -367,6 +420,18 @@ public class Loader {
         }
     }
 
+    /**
+     * 加载指令
+     * @param clazz 类
+     * @param plugin 插件
+     * @param environment 环境
+     * @param op 是否需要OP
+     * @param combat 是否可以处于战斗状态使用
+     * @param permission 权限
+     * @param head 指令头
+     * @param args 参数
+     * @throws Throwable 异常
+     */
     private static void loadCommand(@NotNull Class<?> clazz, @NotNull AbstractPlugin plugin, @NotNull Environment environment, boolean op, boolean combat, @NotNull String permission, @NotNull String head, @NotNull String @NotNull [] args) throws Throwable {
         Class<?> pluginClass = plugin.getClass();
         Map<Class<?>, AbstractCommand> commandMap = LOADED_COMMAND_MAP.computeIfAbsent(pluginClass, key -> new HashMap<>());
@@ -416,6 +481,12 @@ public class Loader {
         }
     }
 
+    /**
+     * 加载定时任务
+     * @param clazz 类
+     * @param plugin 插件
+     * @throws Throwable 异常
+     */
     private static void loadTask(@NotNull Class<?> clazz, @NotNull AbstractPlugin plugin) throws Throwable {
         Class<?> pluginClass = plugin.getClass();
         Map<Class<?>, AbstractTask> taskMap = LOADED_TASK_MAP.computeIfAbsent(pluginClass, key -> new HashMap<>());
@@ -460,6 +531,12 @@ public class Loader {
         }
     }
 
+    /**
+     * 加载监听器
+     * @param clazz 类
+     * @param plugin 插件
+     * @throws Throwable 异常
+     */
     private static void loadListener(@NotNull Class<?> clazz, @NotNull AbstractPlugin plugin) throws Throwable {
         Class<?> pluginClass = plugin.getClass();
         Map<Class<?>, AbstractListener> listenerMap = LOADED_LISTENER_MAP.computeIfAbsent(pluginClass, key -> new HashMap<>());
@@ -507,18 +584,36 @@ public class Loader {
         }
     }
 
+    /**
+     * 判断是否为指令
+     * @param command 指令
+     * @return 是否为指令
+     */
     public static boolean isCommand(@NotNull String command) {
         return COMMAND_SET.contains(command);
     }
 
+    /**
+     * 判断是否为OP指令
+     * @param command 指令
+     * @return 是否为OP指令
+     */
     public static boolean isOpCommand(@NotNull String command) {
         return OP_COMMAND_SET.contains(command);
     }
 
+    /**
+     * 获取指令集合
+     * @return 指令集合
+     */
     public static @NotNull Set<String> getCommands() {
         return COMMAND_SET;
     }
 
+    /**
+     * 获取OP指令集合
+     * @return OP指令集合
+     */
     public static @NotNull Set<String> getOpCommands() {
         return OP_COMMAND_SET;
     }

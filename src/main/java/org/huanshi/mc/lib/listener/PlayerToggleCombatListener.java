@@ -10,10 +10,18 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * PlayerToggleCombatEvent 事件监听器
+ * @author Jalexdalv
+ */
 @Listener
 public class PlayerToggleCombatListener extends AbstractListener {
     private final Set<UUID> flySet = new HashSet<>();
 
+    /**
+     * PlayerToggleCombatEvent 事件发生时处理
+     * @param playerToggleCombatEvent PlayerToggleCombatEvent 事件
+     */
     @EventHandler
     public void onPlayerToggleCombat(@NotNull PlayerToggleCombatEvent playerToggleCombatEvent) {
         Player player = playerToggleCombatEvent.getPlayer();

@@ -11,6 +11,10 @@ import org.huanshi.mc.lib.lang.Zh;
 import org.huanshi.mc.lib.timer.CdTimer;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * PlayerCommandPreprocessEvent 事件监听器
+ * @author Jalexdalv
+ */
 @Listener
 public class PlayerCommandPreprocessListener extends AbstractListener {
     @Autowired
@@ -19,6 +23,10 @@ public class PlayerCommandPreprocessListener extends AbstractListener {
     private int cd;
     private final CdTimer cdTimer = new CdTimer();
 
+    /**
+     * PlayerCommandPreprocessEvent 事件发生时处理
+     * @param playerCommandPreprocessEvent PlayerCommandPreprocessEvent 事件
+     */
     @EventHandler
     public void onPlayerCommandPreprocess(@NotNull PlayerCommandPreprocessEvent playerCommandPreprocessEvent) {
         Player player = playerCommandPreprocessEvent.getPlayer();
