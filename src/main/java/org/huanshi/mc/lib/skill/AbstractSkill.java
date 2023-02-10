@@ -307,7 +307,7 @@ public abstract class AbstractSkill {
                     if (atomicInteger.getAndDecrement() > 0 && (skillRunHandler == null || skillRunHandler.handle())) {
                         player.setVelocity(vector);
                     } else if (skillFinishHandler == null || skillFinishHandler.handle()) {
-                        StatusUtils.stiff(plugin, player, 0.15D);
+                        StatusUtils.stiff(player, 0.15D);
                         cancel();
                     }
                 }

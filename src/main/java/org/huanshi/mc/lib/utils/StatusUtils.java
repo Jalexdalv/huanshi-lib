@@ -3,9 +3,7 @@ package org.huanshi.mc.lib.utils;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
-import org.huanshi.mc.lib.AbstractPlugin;
 import org.huanshi.mc.lib.timer.CdTimer;
-import org.huanshi.mc.lib.timer.Timer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
@@ -15,33 +13,17 @@ import java.util.UUID;
  * @author Jalexdalv
  */
 public class StatusUtils {
-    private static final Timer STUN_TIMER = new Timer(), ROOT_TIMER = new Timer(), STIFF_TIMER = new Timer();
-    private static final CdTimer SILENCE_TIMER = new CdTimer(), STEADY_TIMER = new CdTimer(), INVINCIBLE_TIMER = new CdTimer();
+    private static final CdTimer STUN_TIMER = new CdTimer(), ROOT_TIMER = new CdTimer(), SILENCE_TIMER = new CdTimer(), STEADY_TIMER = new CdTimer(), INVINCIBLE_TIMER = new CdTimer(), STIFF_TIMER = new CdTimer();
     private static final Vector STRIKE_FLY_VECTOR = new Vector(0, 1, 0);
 
     /**
      * 眩晕
-     * @param plugin 插件
      * @param player 玩家
      * @param time 时间（秒）
      * @param force 是否无视免控
      */
-    public static void stun(@NotNull AbstractPlugin plugin, @NotNull Player player, double time, boolean force) {
-        UUID uuid = player.getUniqueId();
-        STUN_TIMER.run(plugin, uuid, false, true, (int) Math.round(time * 1000L / (double) 50), 1,
-            () -> force || !isSteadying(uuid),
-            () -> {
-                if (force || !isSteadying(uuid)) {
-                    player.setWalkSpeed(0.0F);
-                    return true;
-                }
-                return false;
-            }, restTime -> player.setRotation(0.0F, 90.0F),
-            () -> {
-                player.setWalkSpeed(0.2F);
-                return true;
-            }
-        );
+    public static void stun(@NotNull Player player, double time, boolean force) {
+        STUN_TIMER.run(player, time, true, () -> force || isSteadying(player.getUniqueId()), () -> force || isSteadying(player.getUniqueId()), null);
     }
 
     /**
@@ -63,27 +45,12 @@ public class StatusUtils {
 
     /**
      * 禁锢
-     * @param plugin 插件
      * @param player 玩家
      * @param time 时间（秒）
      * @param force 是否无视免控
      */
-    public static void root(@NotNull AbstractPlugin plugin, @NotNull Player player, double time, boolean force) {
-        UUID uuid = player.getUniqueId();
-        ROOT_TIMER.run(plugin, uuid, false, true, 1, (int) Math.round(time * 20L),
-            () -> force || !isSteadying(uuid),
-            () -> {
-                if (force || !isSteadying(uuid)) {
-                    player.setWalkSpeed(0.0F);
-                    return true;
-                }
-                return false;
-            }, null,
-            () -> {
-                player.setWalkSpeed(0.2F);
-                return true;
-            }
-        );
+    public static void root(@NotNull Player player, double time, boolean force) {
+        ROOT_TIMER.run(player, time, true, () -> force || isSteadying(player.getUniqueId()), () -> force || isSteadying(player.getUniqueId()), null);
     }
 
     /**
@@ -107,9 +74,10 @@ public class StatusUtils {
      * 沉默
      * @param player 玩家
      * @param time 时间（秒）
+     * @param force 是否无视免控
      */
-    public static void silence(@NotNull Player player, double time) {
-        SILENCE_TIMER.run(player, time, true, null, null, null);
+    public static void silence(@NotNull Player player, double time, boolean force) {
+        SILENCE_TIMER.run(player, time, true, () -> force || isSteadying(player.getUniqueId()), () -> force || isSteadying(player.getUniqueId()), null);
     }
 
     /**
@@ -183,22 +151,20 @@ public class StatusUtils {
 
     /**
      * 僵直
-     * @param plugin 插件
      * @param player 玩家
      * @param time 时间（秒）
      */
-    public static void stiff(@NotNull AbstractPlugin plugin, @NotNull Player player, double time) {
-        UUID uuid = player.getUniqueId();
-        STIFF_TIMER.run(plugin, uuid, false, true, 1, (int) Math.round(time * 20), null,
-            () -> {
-                player.setWalkSpeed(0.0F);
-                return true;
-            }, null,
-            () -> {
-                player.setWalkSpeed(0.2F);
-                return true;
-            }
-        );
+    public static void stiff(@NotNull Player player, double time) {
+        STIFF_TIMER.run(player, time, true, null, null, null);
+    }
+
+    /**
+     * 获取是否僵直
+     * @param uuid UUID
+     * @return 是否僵直
+     */
+    public static boolean isStiffing(@NotNull UUID uuid) {
+        return STIFF_TIMER.isRunning(uuid);
     }
 
     /**
