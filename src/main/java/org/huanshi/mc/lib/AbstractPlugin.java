@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.huanshi.mc.lib.core.Loader;
+import org.huanshi.mc.lib.lang.Zh;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -11,10 +12,23 @@ import java.util.Set;
 
 public abstract class AbstractPlugin extends JavaPlugin {
     @Override
-    public abstract void onDisable();
+    public void onEnable() {
+        createFolder();
+        load();
+        start();
+        sendConsoleMessage(Zh.enable(getName()));
+    }
 
     @Override
-    public abstract void onEnable();
+    public void onDisable() {
+        clearAllTask();
+        stop();
+        sendConsoleMessage(Zh.disable(getName()));
+    }
+
+    protected void start() {}
+
+    protected void stop() {}
 
     protected void load() {
         try {
