@@ -24,7 +24,7 @@ public class CombatService extends AbstractService {
     @Autowired
     private Plugin plugin;
     @Autowired(file = "config.yml", path = "combat.time")
-    private int time;
+    private double time;
     private final Map<UUID, BossBar> bossBarMap = new ConcurrentHashMap<>();
     private final Timer timer = new Timer();
 
@@ -34,7 +34,7 @@ public class CombatService extends AbstractService {
      */
     public void enter(@NotNull Player player) {
         UUID uuid = player.getUniqueId();
-        timer.run(plugin, uuid, true, false, time, 20, null,
+        timer.run(plugin, uuid, true, true, (int) Math.ceil(time * 2), 10, null,
             () -> {
                 Bukkit.getScheduler().runTask(plugin, () -> Bukkit.getPluginManager().callEvent(new PlayerToggleCombatEvent(player, true)));
                 bossBarMap.putIfAbsent(uuid, BossBar.bossBar(Zh.combat(time), 1.0F, BossBar.Color.RED, BossBar.Overlay.PROGRESS));

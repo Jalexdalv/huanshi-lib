@@ -29,7 +29,7 @@ public class CdTimer {
      */
     public void run(@NotNull Player player, double cd, boolean reentry, @Nullable TimerReentryHandler timerReentryHandler, @Nullable TimerStartHandler timerStartHandler, @Nullable TimerRunHandler timerRunHandler) {
         UUID uuid = player.getUniqueId();
-        int restTime = Math.max((int) Math.ceil((double) (finishTimeMap.getOrDefault(uuid, 0L) - System.currentTimeMillis()) / (double) 1000), 0);
+        double restTime = Math.max((double) (finishTimeMap.getOrDefault(uuid, 0L) - System.currentTimeMillis()) / (double) 1000, 0);
         if (restTime > 0) {
             if (reentry) {
                 if (timerReentryHandler == null || timerReentryHandler.handle()) {

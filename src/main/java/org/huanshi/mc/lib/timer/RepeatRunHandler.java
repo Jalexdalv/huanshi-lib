@@ -1,13 +1,13 @@
 package org.huanshi.mc.lib.timer;
 
 /**
- * 计时器运行时处理
+ * 重复运行时处理
  * @author: Jalexdalv
  */
-public interface TimerRunHandler {
+public interface RepeatRunHandler {
     /**
      * 处理
      * @param restTime 剩余时间（秒）
      */
-    void handle(double restTime);
+    boolean handle(double restTime);
 }

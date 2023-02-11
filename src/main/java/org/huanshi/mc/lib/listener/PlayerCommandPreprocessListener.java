@@ -20,7 +20,7 @@ public class PlayerCommandPreprocessListener extends AbstractListener {
     @Autowired
     private Plugin plugin;
     @Autowired(file = "config.yml", path = "command.cd")
-    private int cd;
+    private double cd;
     private final CdTimer cdTimer = new CdTimer();
 
     /**
@@ -41,8 +41,7 @@ public class PlayerCommandPreprocessListener extends AbstractListener {
                     return true;
                 }
                 return false;
-            },
-            restTime -> {
+            }, restTime -> {
                 playerCommandPreprocessEvent.setCancelled(true);
                 player.sendMessage(Zh.USE_COMMAND_FAST);
             }

@@ -21,7 +21,6 @@ public class PlayerJoinListener extends AbstractListener {
     public void onPlayerJoinEvent(@NotNull PlayerJoinEvent playerJoinEvent) {
         Player player = playerJoinEvent.getPlayer();
         player.setFlyingFallDamage(TriState.FALSE);
-        player.setWalkSpeed(0.2F);
         player.setCollidable(true);
     }
 }

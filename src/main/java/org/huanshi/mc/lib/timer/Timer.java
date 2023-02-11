@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 计时器
@@ -17,6 +18,36 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class Timer {
     private final Map<UUID, Integer> restTimeMap = new ConcurrentHashMap<>();
+
+    /**
+     * 重复
+     * @param plugin 插件
+     * @param async 是否异步
+     * @param repeat 重复次数
+     * @param delay 延迟（tick）
+     * @param period 间隔（tick）
+     * @param repeatStartHandler 重复启动时处理
+     * @param repeatRunHandler 重复运行时处理
+     * @param repeatFinishHandler 重复结束时处理
+     */
+    public static void repeat(@NotNull AbstractPlugin plugin, boolean async, int repeat, int delay, int period, @Nullable RepeatStartHandler repeatStartHandler, @Nullable RepeatRunHandler repeatRunHandler, @Nullable RepeatFinishHandler repeatFinishHandler) {
+        AtomicInteger atomicInteger = new AtomicInteger(repeat);
+        if (repeatStartHandler == null || repeatStartHandler.handle()) {
+            BukkitRunnable bukkitRunnable = new BukkitRunnable() {
+                @Override
+                public void run() {
+                    if ((atomicInteger.getAndDecrement() <= 0 || (repeatRunHandler != null && !repeatRunHandler.handle(atomicInteger.get()))) && (repeatFinishHandler == null || repeatFinishHandler.handle())) {
+                        cancel();
+                    }
+                }
+            };
+            if (async) {
+                bukkitRunnable.runTaskTimerAsynchronously(plugin, delay, period);
+            } else {
+                bukkitRunnable.runTaskTimer(plugin, delay, period);
+            }
+        }
+    }
 
     /**
      * 启动
@@ -44,7 +75,7 @@ public class Timer {
                     Integer restTime = restTimeMap.getOrDefault(uuid, 0);
                     if (restTime > 0) {
                         if (timerRunHandler != null) {
-                            timerRunHandler.handle(restTime);
+                            timerRunHandler.handle((double) restTime * period * 50 / (double) 1000);
                         }
                         restTimeMap.put(uuid, restTime - 1);
                     } else if (timerFinishHandler == null || timerFinishHandler.handle()) {

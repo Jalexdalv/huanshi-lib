@@ -17,8 +17,6 @@ public class Zh {
     public static final Component WORLD_NOT_FOUND = Component.text("该世界不存在", NamedTextColor.RED);
     public static final Component UNKNOWN_COMMAND = Component.text("未知指令", NamedTextColor.RED);
     public static final Component USE_COMMAND_FAST = Component.text("指令发送的太快了", NamedTextColor.RED);
-    public static final Component CASTING = Component.text("正在施展其他技能", NamedTextColor.RED);
-    public static final Component CANNOT_CAST = Component.text("当前状态无法施展技能", NamedTextColor.RED);
 
     public static final Component PLUGIN_NAME_1 = Component.text("[");
     public static final Component PLUGIN_NAME_2 = Component.text("] ");
@@ -46,7 +44,7 @@ public class Zh {
      * @param time 时间
      * @return 战斗状态文本
      */
-    public static @NotNull Component combat(int time) {
+    public static @NotNull Component combat(double time) {
         return Component.text(time, NamedTextColor.YELLOW).append(COMBAT);
     }
     private static final Component CD_1 = Component.text("冷却中, 请等待 ", NamedTextColor.RED);
@@ -56,7 +54,58 @@ public class Zh {
      * @param restTime 剩余时间
      * @return CD文本
      */
-    public static @NotNull Component cd(int restTime) {
+    public static @NotNull Component cd(double restTime) {
         return CD_1.append(Component.text(restTime, NamedTextColor.YELLOW)).append(CD_2);
+    }
+    private static final Component LINK = Component.text(" - ", NamedTextColor.GRAY);
+    private static final Component STUN_1 = Component.text("眩晕", NamedTextColor.RED);
+    private static final Component STUN_2 = Component.text("秒", NamedTextColor.RED);
+    /**
+     * 获取眩晕状态文本
+     * @param time 时间
+     * @return 眩晕状态文本
+     */
+    public static @NotNull Component stun(double time) {
+        return STUN_1.append(LINK).append(Component.text(time, NamedTextColor.YELLOW)).append(STUN_2);
+    }
+    private static final Component ROOT_1 = Component.text("禁锢", NamedTextColor.DARK_PURPLE);
+    private static final Component ROOT_2 = Component.text("秒", NamedTextColor.DARK_PURPLE);
+    /**
+     * 获取禁锢状态文本
+     * @param time 时间
+     * @return 禁锢状态文本
+     */
+    public static @NotNull Component root(double time) {
+        return ROOT_1.append(LINK).append(Component.text(time, NamedTextColor.YELLOW)).append(ROOT_2);
+    }
+    private static final Component SILENCE_1 = Component.text("沉默", NamedTextColor.LIGHT_PURPLE);
+    private static final Component SILENCE_2 = Component.text("秒", NamedTextColor.LIGHT_PURPLE);
+    /**
+     * 获取沉默状态文本
+     * @param time 时间
+     * @return 沉默状态文本
+     */
+    public static @NotNull Component silence(double time) {
+        return SILENCE_1.append(LINK).append(Component.text(time, NamedTextColor.YELLOW)).append(SILENCE_2);
+    }
+    private static final Component STEADY_1 = Component.text("霸体", NamedTextColor.GREEN);
+    private static final Component STEADY_2 = Component.text("秒", NamedTextColor.GREEN);
+    /**
+     * 获取霸体状态文本
+     * @param time 时间
+     * @return 霸体状态文本
+     */
+    public static @NotNull Component steady(double time) {
+        return STEADY_1.append(LINK).append(Component.text(time, NamedTextColor.YELLOW)).append(STEADY_2);
+    }
+    private static final Component INVINCIBLE_1 = Component.text("霸体", NamedTextColor.GREEN);
+    private static final Component INVINCIBLE_2 = Component.text("秒", NamedTextColor.GREEN);
+    /**
+     * 获取无敌状态文本
+     * @param time 时间
+     * @return 无敌状态文本
+     */
+    public static @NotNull Component invincible(double time) {
+        return INVINCIBLE_1.append(LINK).append(Component.text(time, NamedTextColor.YELLOW)).append(INVINCIBLE_2);
     }
 }

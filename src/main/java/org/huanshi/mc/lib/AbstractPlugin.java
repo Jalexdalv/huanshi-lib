@@ -61,7 +61,7 @@ public abstract class AbstractPlugin extends JavaPlugin {
     /**
      * 重载
      */
-    public void reLoad() {
+    public void reload() {
         try {
             Loader.load(this);
         } catch (Throwable throwable) {
