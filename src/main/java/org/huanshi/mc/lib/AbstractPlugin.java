@@ -51,18 +51,6 @@ public abstract class AbstractPlugin extends JavaPlugin {
      */
     protected void load() {
         try {
-            Loader.scan(this);
-            Loader.load(this);
-        } catch (Throwable throwable) {
-            throw new RuntimeException(throwable);
-        }
-    }
-
-    /**
-     * 重载
-     */
-    public void reload() {
-        try {
             Loader.load(this);
         } catch (Throwable throwable) {
             throw new RuntimeException(throwable);

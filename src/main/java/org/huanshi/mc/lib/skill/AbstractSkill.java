@@ -146,24 +146,24 @@ public abstract class AbstractSkill {
         AtomicDouble atomicDouble = new AtomicDouble(startAngle);
         double stepAngle = (endAngle - startAngle) / (double) repeat, fixRadians = Math.toRadians(location.getYaw()), fixSin = Math.sin(fixRadians), fixCos = Math.cos(fixRadians);
         switch (coordinate) {
-            case XY -> Timer.repeat(plugin, true, repeat + 1, 0, period, null, restTimes -> {
-                double radians = Math.toRadians(atomicDouble.getAndAdd(stepAngle)), x = radius * Math.sin(radians), y = radius * Math.sin(radians), fixX = -x * fixCos, fixZ = -x * fixSin;
+            case XY -> Timer.repeat(plugin, false, repeat + 1, 0, period, null, restTimes -> {
+                double radians = Math.toRadians(atomicDouble.getAndAdd(stepAngle)), x = radius * Math.sin(radians), y = radius * Math.sin(radians), fixX = - x * fixCos, fixZ = - x * fixSin;
                 location.add(fixX, y, fixZ);
-                Bukkit.getScheduler().runTask(plugin, () -> playParticle(location, particle, count, offsetX, offsetY, offsetZ, speed, data));
+                playParticle(location, particle, count, offsetX, offsetY, offsetZ, speed, data);
                 location.subtract(fixX, y, fixZ);
                 return true;
             }, null);
-            case YZ -> Timer.repeat(plugin, true, repeat + 1, 0, period, null, restTimes -> {
-                double radians = Math.toRadians(atomicDouble.getAndAdd(stepAngle)), z = radius * Math.cos(radians), y = radius * Math.sin(radians), fixX = -z * fixSin, fixZ = z * fixCos;
+            case YZ -> Timer.repeat(plugin, false, repeat + 1, 0, period, null, restTimes -> {
+                double radians = Math.toRadians(atomicDouble.getAndAdd(stepAngle)), z = radius * Math.cos(radians), y = radius * Math.sin(radians), fixX = - z * fixSin, fixZ = z * fixCos;
                 location.add(fixX, y, fixZ);
-                Bukkit.getScheduler().runTask(plugin, () -> playParticle(location, particle, count, offsetX, offsetY, offsetZ, speed, data));
+                playParticle(location, particle, count, offsetX, offsetY, offsetZ, speed, data);
                 location.subtract(fixX, y, fixZ);
                 return true;
             }, null);
-            case XZ -> Timer.repeat(plugin, true, repeat + 1, 0, period, null, restTimes -> {
-                double radians = Math.toRadians(atomicDouble.getAndAdd(stepAngle)), x = radius * Math.sin(radians), z = radius * Math.cos(radians), fixX = -x * fixCos - z * fixSin, fixZ = z * fixCos - x * fixSin;
+            case XZ -> Timer.repeat(plugin, false, repeat + 1, 0, period, null, restTimes -> {
+                double radians = Math.toRadians(atomicDouble.getAndAdd(stepAngle)), x = radius * Math.sin(radians), z = radius * Math.cos(radians), fixX = - x * fixCos - z * fixSin, fixZ = z * fixCos - x * fixSin;
                 location.add(fixX, 0, fixZ);
-                Bukkit.getScheduler().runTask(plugin, () -> playParticle(location, particle, count, offsetX, offsetY, offsetZ, speed, data));
+                playParticle(location, particle, count, offsetX, offsetY, offsetZ, speed, data);
                 location.subtract(fixX, 0, fixZ);
                 return true;
             }, null);
@@ -191,8 +191,8 @@ public abstract class AbstractSkill {
     protected <T> void play3DParticleAnimation(@NotNull Location location, @NotNull Particle particle, boolean reverse, int count, double offsetX, double offsetY, double offsetZ, double speed, @Nullable T data, double startAngle, double endAngle, double radius, int repeat, int period) {
         AtomicDouble atomicDouble = new AtomicDouble(startAngle);
         double stepAngle = (endAngle - startAngle) / (double) repeat, fixRadians = Math.toRadians(location.getYaw()), fixSin = Math.sin(fixRadians), fixCos = Math.cos(fixRadians);
-        Timer.repeat(plugin, true, repeat + 1, 0, period, null, restTimes -> {
-            double radians = Math.toRadians(atomicDouble.getAndAdd(stepAngle)), x = radius * Math.sin(radians), z = radius * Math.cos(radians), y = Math.sin(radians), fixX = reverse ? -x * fixCos - z * fixSin : x * fixCos + z * fixSin, fixZ = reverse ? z * fixCos - x * fixSin : x * fixSin - z * fixCos;
+        Timer.repeat(plugin, false, repeat + 1, 0, period, null, restTimes -> {
+            double radians = Math.toRadians(atomicDouble.getAndAdd(stepAngle)), x = radius * Math.sin(radians), z = radius * Math.cos(radians), y = Math.sin(radians), fixX = reverse ? x * fixCos + z * fixSin : - x * fixCos - z * fixSin, fixZ = reverse ? x * fixSin - z * fixCos : z * fixCos - x * fixSin;
             location.add(fixX, y, fixZ);
             playParticle(location, particle, count, offsetX, offsetY, offsetZ, speed, data);
             location.subtract(fixX, y, fixZ);
@@ -214,44 +214,6 @@ public abstract class AbstractSkill {
             }
         }
     }
-
-//    /**
-//     * 重复冲刺
-//     * @param player 玩家
-//     * @param repeat 重复次数
-//     * @param delay 延迟（tick）
-//     * @param period 间隔（tick）
-//     * @param chargeRepeat 冲刺次数
-//     * @param velocity 速度
-//     * @param skillStartHandler 技能启动时处理
-//     * @param skillRunHandler 技能运行时处理
-//     * @param skillFinishHandler 技能结束时处理
-//     * @param chargeStartHandler 冲刺启动时处理
-//     * @param chargeRunHandler 冲刺运行时处理
-//     * @param chargeFinishHandler 冲刺结束时处理
-//     */
-//    protected void repeatCharge(@NotNull Player player, int repeat, int delay, int period, int chargeRepeat, int chargeDelay, int chargePeriod, double velocity, @Nullable RepeatStartHandler repeatStartHandler, @Nullable RepeatRunHandler repeatRunHandler, @Nullable RepeatFinishHandler repeatFinishHandler, @Nullable RepeatStartHandler chargeRepeatStartHandler, @Nullable RepeatRunHandler chargeRepeatRunHandler, @Nullable ChargeFinishHandler chargeFinishHandler) {
-//        TimerUtils.repeat(plugin, false, repeat, delay, period, repeatStartHandler, restTimes -> {
-//            if (canProceed(player) && (repeatRunHandler == null || repeatRunHandler.handle(restTimes))) {
-//                Vector vector = TargetUtils.fixDirection(player.getLocation(), velocity);
-//                AtomicInteger atomicInteger = new AtomicInteger(chargeRepeat);
-//                if (chargeRepeatStartHandler == null || chargeRepeatStartHandler.handle()) {
-//                    new BukkitRunnable() {
-//                        @Override
-//                        public void run() {
-//                            if (atomicInteger.getAndDecrement() > 0 && canProceed(player) && (chargeRepeatRunHandler == null || chargeRepeatRunHandler.handle(atomicInteger.get()))) {
-//                                player.setVelocity(vector);
-//                            } else if (chargeFinishHandler == null || chargeFinishHandler.handle(restTimes)) {
-//                                cancel();
-//                            }
-//                        }
-//                    }.runTaskTimer(plugin, chargeDelay, chargePeriod);
-//                    return true;
-//                }
-//            }
-//            return false;
-//        }, repeatFinishHandler);
-//    }
 
     /**
      * 冲刺
