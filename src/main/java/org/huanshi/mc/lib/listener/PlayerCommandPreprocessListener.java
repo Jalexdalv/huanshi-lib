@@ -20,7 +20,7 @@ public class PlayerCommandPreprocessListener extends AbstractListener {
     @Autowired
     private Plugin plugin;
     @Autowired(file = "config.yml", path = "command.cd")
-    private double cd;
+    private int cd;
     private final CdTimer cdTimer = new CdTimer();
 
     /**

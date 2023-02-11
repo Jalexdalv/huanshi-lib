@@ -25,7 +25,7 @@ public class Timer {
      * @param async 是否异步
      * @param reentry 是否重入
      * @param repeat 重复次数
-     * @param period 触发间隔（tick）
+     * @param period 间隔（tick）
      * @param timerReentryHandler 计时器重入时处理
      * @param timerStartHandler 计时器启动时处理
      * @param timerRunHandler 计时器运行时处理

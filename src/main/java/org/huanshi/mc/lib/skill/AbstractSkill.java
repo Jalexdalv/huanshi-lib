@@ -1,5 +1,6 @@
 package org.huanshi.mc.lib.skill;
 
+import com.google.common.util.concurrent.AtomicDouble;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -190,13 +191,65 @@ public abstract class AbstractSkill {
      * @param offsetY y轴偏移量
      * @param offsetZ z轴偏移量
      * @param speed 速度
+     * @param data 数据
+     * @param <T> 类型
      */
-    protected void playParticle(@NotNull Location location, @NotNull Particle particle, int count, double offsetX, double offsetY, double offsetZ, double speed) {
+    protected <T> void playParticle(@NotNull Location location, @NotNull Particle particle, int count, double offsetX, double offsetY, double offsetZ, double speed, @NotNull T data) {
         location.getWorld().spawnParticle(particle, location, count, offsetX, offsetY, offsetZ, speed);
     }
 
     /**
-     * 播放扇形粒子动画
+     * 播放2D粒子动画
+     * @param location 位置
+     * @param particle 粒子
+     * @param coordinate 坐标轴
+     * @param count 数量
+     * @param offsetX x轴偏移量
+     * @param offsetY y轴偏移量
+     * @param offsetZ z轴偏移量
+     * @param speed 速度
+     * @param data 数据
+     * @param startAngle 开始角度
+     * @param endAngle 结束角度
+     * @param radius 半径
+     * @param repeat 重复次数
+     * @param period 间隔（tick）
+     * @param <T> 类型
+     */
+    protected <T> void play2DParticleAnimation(@NotNull Location location, @NotNull Particle particle, @NotNull Coordinate coordinate, int count, double offsetX, double offsetY, double offsetZ, double speed, @Nullable T data, double startAngle, double endAngle, double radius, int repeat, int period) {
+        AtomicDouble atomicDouble = new AtomicDouble(startAngle);
+        double stepAngle = (endAngle - startAngle) / (double) repeat;
+        double fixRadians = Math.toRadians(location.getYaw()), fixSin = Math.sin(fixRadians), fixCos = Math.cos(fixRadians);
+        switch (coordinate) {
+            case XY -> repeat(repeat + 1, period, null, () -> {
+                double radians = Math.toRadians(atomicDouble.getAndAdd(stepAngle)), x = radius * Math.sin(radians), y = radius * Math.sin(radians);
+                double fixX = -x * fixCos, fixZ = -x * fixSin;
+                location.add(fixX, y, fixZ);
+                location.getWorld().spawnParticle(particle, location, count, offsetX, offsetY, offsetZ, speed, data);
+                location.subtract(fixX, y, fixZ);
+                return true;
+            }, null);
+            case YZ -> repeat(repeat + 1, period, null, () -> {
+                double radians = Math.toRadians(atomicDouble.getAndAdd(stepAngle)), z = radius * Math.cos(radians), y = radius * Math.sin(radians);
+                double fixX = -z * fixSin, fixZ = z * fixCos;
+                location.add(fixX, y, fixZ);
+                location.getWorld().spawnParticle(particle, location, count, offsetX, offsetY, offsetZ, speed, data);
+                location.subtract(fixX, y, fixZ);
+                return true;
+            }, null);
+            case XZ -> repeat(repeat + 1, period, null, () -> {
+                double radians = Math.toRadians(atomicDouble.getAndAdd(stepAngle)), x = radius * Math.sin(radians), z = radius * Math.cos(radians);
+                double fixX = -x * fixCos - z * fixSin, fixZ = z * fixCos - x * fixSin;
+                location.add(fixX, 0, fixZ);
+                location.getWorld().spawnParticle(particle, location, count, offsetX, offsetY, offsetZ, speed, data);
+                location.subtract(fixX, 0, fixZ);
+                return true;
+            }, null);
+        }
+    }
+
+    /**
+     * 播放3D粒子动画
      * @param location 位置
      * @param particle 粒子
      * @param count 数量
@@ -204,19 +257,24 @@ public abstract class AbstractSkill {
      * @param offsetY y轴偏移量
      * @param offsetZ z轴偏移量
      * @param speed 速度
-     * @param angle 角度
+     * @param data 数据
+     * @param startAngle 开始角度
+     * @param endAngle 结束角度
      * @param radius 半径
      * @param repeat 重复次数
-     * @param period 触发间隔（tick）
+     * @param period 间隔（tick）
+     * @param <T> 类型
      */
-    protected void playSectorParticleAnimation(@NotNull Location location, @NotNull Particle particle, int count, double offsetX, double offsetY, double offsetZ, double speed, int angle, double radius, int repeat, int period) {
-        Vector vector = fixDirection(location, radius).rotateAroundY(Math.toRadians((double) angle / (double) 2));
-        double stepAngle = -Math.toRadians((double) angle / (double) repeat);
+    protected <T> void play3DSectorParticleAnimation(@NotNull Location location, @NotNull Particle particle, int count, double offsetX, double offsetY, double offsetZ, double speed, @Nullable T data, double startAngle, double endAngle, double radius, int repeat, int period) {
+        AtomicDouble atomicDouble = new AtomicDouble(startAngle);
+        double stepAngle = (endAngle - startAngle) / (double) repeat;
+        double fixRadians = Math.toRadians(location.getYaw()), fixSin = Math.sin(fixRadians), fixCos = Math.cos(fixRadians);
         repeat(repeat + 1, period, null, () -> {
-            location.add(vector);
-            location.getWorld().spawnParticle(particle, location, count, offsetX, offsetY, offsetZ, speed);
-            location.subtract(vector);
-            vector.rotateAroundY(stepAngle);
+            double radians = Math.toRadians(atomicDouble.getAndAdd(stepAngle)), x = radius * Math.sin(radians), z = radius * Math.cos(radians), y = Math.sin(radians);
+            double fixX = -x * fixCos - z * fixSin, fixZ = z * fixCos - x * fixSin;
+            location.add(fixX, y, fixZ);
+            location.getWorld().spawnParticle(particle, location, count, offsetX, offsetY, offsetZ, speed, data);
+            location.subtract(fixX, y, fixZ);
             return true;
         }, null);
     }
@@ -239,7 +297,7 @@ public abstract class AbstractSkill {
     /**
      * 重复
      * @param repeat 重复次数
-     * @param period 触发间隔（tick）
+     * @param period 间隔（tick）
      * @param skillStartHandler 技能启动时处理
      * @param skillRunHandler 技能运行时处理
      * @param skillFinishHandler 技能结束时处理
@@ -262,7 +320,7 @@ public abstract class AbstractSkill {
      * 冲刺
      * @param player 玩家
      * @param repeat 重复次数
-     * @param period 触发间隔（tick）
+     * @param period 间隔（tick）
      * @param velocityRepeat 加速次数
      * @param velocity 速度
      * @param skillStartHandler 技能启动时处理
