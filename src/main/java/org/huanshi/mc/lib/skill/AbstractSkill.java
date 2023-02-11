@@ -265,7 +265,7 @@ public abstract class AbstractSkill {
      * @param period 间隔（tick）
      * @param <T> 类型
      */
-    protected <T> void play3DSectorParticleAnimation(@NotNull Location location, @NotNull Particle particle, int count, double offsetX, double offsetY, double offsetZ, double speed, @Nullable T data, double startAngle, double endAngle, double radius, int repeat, int period) {
+    protected <T> void play3DParticleAnimation(@NotNull Location location, @NotNull Particle particle, int count, double offsetX, double offsetY, double offsetZ, double speed, @Nullable T data, double startAngle, double endAngle, double radius, int repeat, int period) {
         AtomicDouble atomicDouble = new AtomicDouble(startAngle);
         double stepAngle = (endAngle - startAngle) / (double) repeat;
         double fixRadians = Math.toRadians(location.getYaw()), fixSin = Math.sin(fixRadians), fixCos = Math.cos(fixRadians);
