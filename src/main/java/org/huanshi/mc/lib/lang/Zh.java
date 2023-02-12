@@ -2,6 +2,7 @@ package org.huanshi.mc.lib.lang;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.huanshi.mc.lib.utils.TimerUtils;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -41,71 +42,71 @@ public class Zh {
     private static final Component COMBAT = Component.text(" 秒后离开战斗状态", NamedTextColor.RED);
     /**
      * 获取战斗状态文本
-     * @param time 时间
+     * @param duration 时长（毫秒）
      * @return 战斗状态文本
      */
-    public static @NotNull Component combat(double time) {
-        return Component.text(time, NamedTextColor.YELLOW).append(COMBAT);
+    public static @NotNull Component combat(long duration) {
+        return Component.text(TimerUtils.convertMillisecondToSecond(duration), NamedTextColor.YELLOW).append(COMBAT);
     }
     private static final Component CD_1 = Component.text("冷却中, 请等待 ", NamedTextColor.RED);
     private static final Component CD_2 = Component.text(" 秒", NamedTextColor.RED);
     /**
      * 获取CD文本
-     * @param restTime 剩余时间
+     * @param duration 时长（毫秒）
      * @return CD文本
      */
-    public static @NotNull Component cd(double restTime) {
-        return CD_1.append(Component.text(restTime, NamedTextColor.YELLOW)).append(CD_2);
+    public static @NotNull Component cd(long duration) {
+        return CD_1.append(Component.text(TimerUtils.convertMillisecondToSecond(duration), NamedTextColor.YELLOW)).append(CD_2);
     }
     private static final Component LINK = Component.text(" - ", NamedTextColor.GRAY);
     private static final Component STUN_1 = Component.text("眩晕", NamedTextColor.RED);
     private static final Component STUN_2 = Component.text("秒", NamedTextColor.RED);
     /**
      * 获取眩晕状态文本
-     * @param time 时间
+     * @param duration 时长（毫秒）
      * @return 眩晕状态文本
      */
-    public static @NotNull Component stun(double time) {
-        return STUN_1.append(LINK).append(Component.text(time, NamedTextColor.YELLOW)).append(STUN_2);
+    public static @NotNull Component stun(long duration) {
+        return STUN_1.append(LINK).append(Component.text(TimerUtils.convertMillisecondToSecond(duration), NamedTextColor.YELLOW)).append(STUN_2);
     }
     private static final Component ROOT_1 = Component.text("禁锢", NamedTextColor.DARK_PURPLE);
     private static final Component ROOT_2 = Component.text("秒", NamedTextColor.DARK_PURPLE);
     /**
      * 获取禁锢状态文本
-     * @param time 时间
+     * @param duration 时长（毫秒）
      * @return 禁锢状态文本
      */
-    public static @NotNull Component root(double time) {
-        return ROOT_1.append(LINK).append(Component.text(time, NamedTextColor.YELLOW)).append(ROOT_2);
+    public static @NotNull Component root(long duration) {
+        return ROOT_1.append(LINK).append(Component.text(TimerUtils.convertMillisecondToSecond(duration), NamedTextColor.YELLOW)).append(ROOT_2);
     }
     private static final Component SILENCE_1 = Component.text("沉默", NamedTextColor.LIGHT_PURPLE);
     private static final Component SILENCE_2 = Component.text("秒", NamedTextColor.LIGHT_PURPLE);
     /**
      * 获取沉默状态文本
-     * @param time 时间
+     * @param duration 时长（毫秒）
      * @return 沉默状态文本
      */
-    public static @NotNull Component silence(double time) {
-        return SILENCE_1.append(LINK).append(Component.text(time, NamedTextColor.YELLOW)).append(SILENCE_2);
+    public static @NotNull Component silence(long duration) {
+        return SILENCE_1.append(LINK).append(Component.text(TimerUtils.convertMillisecondToSecond(duration), NamedTextColor.YELLOW)).append(SILENCE_2);
     }
     private static final Component STEADY_1 = Component.text("霸体", NamedTextColor.GREEN);
     private static final Component STEADY_2 = Component.text("秒", NamedTextColor.GREEN);
     /**
      * 获取霸体状态文本
-     * @param time 时间
+     * @param duration 时长（毫秒）
      * @return 霸体状态文本
      */
-    public static @NotNull Component steady(double time) {
-        return STEADY_1.append(LINK).append(Component.text(time, NamedTextColor.YELLOW)).append(STEADY_2);
+    public static @NotNull Component steady(long duration) {
+        return STEADY_1.append(LINK).append(Component.text(TimerUtils.convertMillisecondToSecond(duration), NamedTextColor.YELLOW)).append(STEADY_2);
     }
     private static final Component INVINCIBLE_1 = Component.text("霸体", NamedTextColor.GREEN);
     private static final Component INVINCIBLE_2 = Component.text("秒", NamedTextColor.GREEN);
     /**
      * 获取无敌状态文本
-     * @param time 时间
+     * @param duration 时长（毫秒）
      * @return 无敌状态文本
      */
-    public static @NotNull Component invincible(double time) {
-        return INVINCIBLE_1.append(LINK).append(Component.text(time, NamedTextColor.YELLOW)).append(INVINCIBLE_2);
+    public static @NotNull Component invincible(long duration) {
+        return INVINCIBLE_1.append(LINK).append(Component.text(TimerUtils.convertMillisecondToSecond(duration), NamedTextColor.YELLOW)).append(INVINCIBLE_2);
     }
 }

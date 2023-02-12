@@ -2,6 +2,7 @@ package org.huanshi.mc.lib.timer;
 
 import org.bukkit.scheduler.BukkitRunnable;
 import org.huanshi.mc.lib.AbstractPlugin;
+import org.huanshi.mc.lib.utils.TimerUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,33 +11,46 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 计时器
  * @author: Jalexdalv
  */
 public class Timer {
-    private final Map<UUID, Integer> restTimeMap = new ConcurrentHashMap<>();
+    private final Map<UUID, Integer> remainRepeatMap = new ConcurrentHashMap<>();
 
     /**
-     * 重复
+     * 启动
      * @param plugin 插件
+     * @param uuid UUID
      * @param async 是否异步
-     * @param repeat 重复次数
+     * @param reentry 是否重入
+     * @param duration 时长（毫秒）
      * @param delay 延迟（tick）
      * @param period 间隔（tick）
-     * @param repeatStartHandler 重复启动时处理
-     * @param repeatRunHandler 重复运行时处理
-     * @param repeatFinishHandler 重复结束时处理
+     * @param timerReentryHandler 计时器重入时处理
+     * @param timerStartHandler 计时器启动时处理
+     * @param timerRunHandler 计时器运行时处理
+     * @param timerFinishHandler 计时器结束时处理
      */
-    public static void repeat(@NotNull AbstractPlugin plugin, boolean async, int repeat, int delay, int period, @Nullable RepeatStartHandler repeatStartHandler, @Nullable RepeatRunHandler repeatRunHandler, @Nullable RepeatFinishHandler repeatFinishHandler) {
-        AtomicInteger atomicInteger = new AtomicInteger(repeat);
-        if (repeatStartHandler == null || repeatStartHandler.handle()) {
+    public void run(@NotNull AbstractPlugin plugin, @NotNull UUID uuid, boolean async, boolean reentry, long duration, int delay, int period, @Nullable TimerReentryHandler timerReentryHandler, @Nullable TimerStartHandler timerStartHandler, @Nullable TimerRunHandler timerRunHandler, @Nullable TimerFinishHandler timerFinishHandler) {
+        if (isRunning(uuid)) {
+            if (reentry && (timerReentryHandler == null || timerReentryHandler.handle())) {
+                remainRepeatMap.merge(uuid, TimerUtils.convertMillisecondToRepeat(duration, period), Integer::max);
+            }
+        } else if (timerStartHandler == null || timerStartHandler.handle()) {
+            remainRepeatMap.put(uuid, TimerUtils.convertMillisecondToRepeat(duration, period));
             BukkitRunnable bukkitRunnable = new BukkitRunnable() {
                 @Override
                 public void run() {
-                    if ((atomicInteger.getAndDecrement() <= 0 || (repeatRunHandler != null && !repeatRunHandler.handle(atomicInteger.get()))) && (repeatFinishHandler == null || repeatFinishHandler.handle())) {
+                    Integer remainRepeat = remainRepeatMap.getOrDefault(uuid, 0);
+                    if (remainRepeat > 0) {
+                        remainRepeatMap.put(uuid, remainRepeat - 1);
+                        if (timerRunHandler != null) {
+                            timerRunHandler.handle(TimerUtils.convertRepeatToMillisecond(remainRepeat, period));
+                        }
+                    } else if (timerFinishHandler == null || timerFinishHandler.handle()) {
+                        remainRepeatMap.remove(uuid);
                         cancel();
                     }
                 }
@@ -50,54 +64,11 @@ public class Timer {
     }
 
     /**
-     * 启动
-     * @param plugin 插件
-     * @param uuid UUID
-     * @param async 是否异步
-     * @param reentry 是否重入
-     * @param repeat 重复次数
-     * @param period 间隔（tick）
-     * @param timerReentryHandler 计时器重入时处理
-     * @param timerStartHandler 计时器启动时处理
-     * @param timerRunHandler 计时器运行时处理
-     * @param timerFinishHandler 计时器结束时处理
-     */
-    public void run(@NotNull AbstractPlugin plugin, @NotNull UUID uuid, boolean async, boolean reentry, int repeat, int period, @Nullable TimerReentryHandler timerReentryHandler, @Nullable TimerStartHandler timerStartHandler, @Nullable TimerRunHandler timerRunHandler, @Nullable TimerFinishHandler timerFinishHandler) {
-        if (isRunning(uuid)) {
-            if (reentry && (timerReentryHandler == null || timerReentryHandler.handle())) {
-                restTimeMap.merge(uuid, repeat, Integer::max);
-            }
-        } else if (timerStartHandler == null || timerStartHandler.handle()) {
-            restTimeMap.put(uuid, repeat);
-            BukkitRunnable bukkitRunnable = new BukkitRunnable() {
-                @Override
-                public void run() {
-                    Integer restTime = restTimeMap.getOrDefault(uuid, 0);
-                    if (restTime > 0) {
-                        if (timerRunHandler != null) {
-                            timerRunHandler.handle((double) restTime * period * 50 / (double) 1000);
-                        }
-                        restTimeMap.put(uuid, restTime - 1);
-                    } else if (timerFinishHandler == null || timerFinishHandler.handle()) {
-                        restTimeMap.remove(uuid);
-                        cancel();
-                    }
-                }
-            };
-            if (async) {
-                bukkitRunnable.runTaskTimerAsynchronously(plugin, 0L, period);
-            } else {
-                bukkitRunnable.runTaskTimer(plugin, 0L, period);
-            }
-        }
-    }
-
-    /**
      * 清除
      * @param uuid UUID
      */
     public void clear(@NotNull UUID uuid) {
-        restTimeMap.remove(uuid);
+        remainRepeatMap.remove(uuid);
     }
 
     /**
@@ -106,7 +77,7 @@ public class Timer {
      */
     public @NotNull Set<UUID> getRunnings() {
         Set<UUID> runningSet = new HashSet<>();
-        for (Map.Entry<UUID, Integer> entry : restTimeMap.entrySet()) {
+        for (Map.Entry<UUID, Integer> entry : remainRepeatMap.entrySet()) {
             if (entry.getValue() > 0) {
                 runningSet.add(entry.getKey());
             }
@@ -120,6 +91,6 @@ public class Timer {
      * @return 是否正在运行
      */
     public boolean isRunning(@NotNull UUID uuid) {
-        return restTimeMap.getOrDefault(uuid, 0) > 0;
+        return remainRepeatMap.getOrDefault(uuid, 0) > 0;
     }
 }

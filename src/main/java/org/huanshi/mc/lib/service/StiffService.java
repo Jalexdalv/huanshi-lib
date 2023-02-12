@@ -11,8 +11,8 @@ import java.util.UUID;
 public class StiffService extends AbstractService {
     private final CdTimer cdTimer = new CdTimer();
 
-    public void run(@NotNull Player player, double time) {
-        cdTimer.run(player, time, true, null, null, null);
+    public void run(@NotNull Player player, long duration) {
+        cdTimer.run(player, duration, true, null, null, null);
     }
 
     public void clear(@NotNull UUID uuid) {

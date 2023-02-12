@@ -1,6 +1,7 @@
 package org.huanshi.mc.lib.service;
 
 import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.huanshi.mc.lib.Plugin;
 import org.huanshi.mc.lib.annotation.Autowired;
@@ -17,16 +18,18 @@ import java.util.concurrent.ConcurrentHashMap;
 public class RootService extends AbstractService {
     @Autowired
     private Plugin plugin;
+    @Autowired(file = "config.yml", path = "root.period")
+    private int period;
     private final Map<UUID, BossBar> bossBarMap = new ConcurrentHashMap<>();
     private final Timer timer = new Timer();
 
-    public void run(@NotNull Player player, double time) {
+    public void run(@NotNull Player player, long duration) {
         UUID uuid = player.getUniqueId();
-        timer.run(plugin, uuid, true, true, (int) Math.ceil(time * 2), 10, null,
+        timer.run(plugin, uuid, true, true, duration, 0, period, null,
             () -> {
-                bossBarMap.putIfAbsent(uuid, BossBar.bossBar(Zh.root(time), 1.0F, BossBar.Color.PURPLE, BossBar.Overlay.NOTCHED_6));
+                bossBarMap.putIfAbsent(uuid, BossBar.bossBar(Component.empty(), 1.0F, BossBar.Color.PURPLE, BossBar.Overlay.NOTCHED_6));
                 return true;
-            }, restTime -> player.showBossBar(bossBarMap.get(uuid).name(Zh.root(restTime)).progress((float) restTime / (float) time)),
+            }, remainDuration -> player.showBossBar(bossBarMap.get(uuid).name(Zh.root(remainDuration)).progress((float) remainDuration / (float) duration)),
             () -> {
                 player.hideBossBar(bossBarMap.get(uuid));
                 return true;

@@ -7,7 +7,7 @@ package org.huanshi.mc.lib.timer;
 public interface TimerRunHandler {
     /**
      * 处理
-     * @param restTime 剩余时间（秒）
+     * @param remainDuration 剩余时长（毫秒）
      */
-    void handle(double restTime);
+    void handle(long remainDuration);
 }

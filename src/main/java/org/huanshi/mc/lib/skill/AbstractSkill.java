@@ -15,11 +15,11 @@ import org.huanshi.mc.lib.annotation.Autowired;
 import org.huanshi.mc.lib.event.SkillCastEvent;
 import org.huanshi.mc.lib.service.SkillService;
 import org.huanshi.mc.lib.timer.CdTimer;
-import org.huanshi.mc.lib.timer.RepeatFinishHandler;
-import org.huanshi.mc.lib.timer.RepeatRunHandler;
-import org.huanshi.mc.lib.timer.RepeatStartHandler;
-import org.huanshi.mc.lib.timer.Timer;
+import org.huanshi.mc.lib.utils.RepeatFinishHandler;
+import org.huanshi.mc.lib.utils.RepeatRunHandler;
+import org.huanshi.mc.lib.utils.RepeatStartHandler;
 import org.huanshi.mc.lib.utils.TargetUtils;
+import org.huanshi.mc.lib.utils.TimerUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -50,11 +50,11 @@ public abstract class AbstractSkill {
     /**
      * 释放
      * @param player 玩家
-     * @param cd CD（秒）
+     * @param cd CD（毫秒）
      * @param title 标题
      * @param skillCastHandler 技能释放时处理
      */
-    protected void cast(@NotNull Player player, double cd, @NotNull Title title, @NotNull SkillCastHandler skillCastHandler) {
+    protected void cast(@NotNull Player player, long cd, @NotNull Title title, @NotNull SkillCastHandler skillCastHandler) {
         UUID uuid = player.getUniqueId();
         if (!skillService.isCasting(uuid) && canCast(player)) {
             cdTimer.run(player, cd, false, null, () -> {
@@ -146,21 +146,21 @@ public abstract class AbstractSkill {
         AtomicDouble atomicDouble = new AtomicDouble(startAngle);
         double stepAngle = (endAngle - startAngle) / (double) repeat, fixRadians = Math.toRadians(location.getYaw()), fixSin = Math.sin(fixRadians), fixCos = Math.cos(fixRadians);
         switch (coordinate) {
-            case XY -> Timer.repeat(plugin, false, repeat + 1, 0, period, null, restTimes -> {
+            case XY -> TimerUtils.repeat(plugin, false, repeat + 1, 0, period, null, restTimes -> {
                 double radians = Math.toRadians(atomicDouble.getAndAdd(stepAngle)), x = radius * Math.sin(radians), y = radius * Math.sin(radians), fixX = - x * fixCos, fixZ = - x * fixSin;
                 location.add(fixX, y, fixZ);
                 playParticle(location, particle, count, offsetX, offsetY, offsetZ, speed, data);
                 location.subtract(fixX, y, fixZ);
                 return true;
             }, null);
-            case YZ -> Timer.repeat(plugin, false, repeat + 1, 0, period, null, restTimes -> {
+            case YZ -> TimerUtils.repeat(plugin, false, repeat + 1, 0, period, null, restTimes -> {
                 double radians = Math.toRadians(atomicDouble.getAndAdd(stepAngle)), z = radius * Math.cos(radians), y = radius * Math.sin(radians), fixX = - z * fixSin, fixZ = z * fixCos;
                 location.add(fixX, y, fixZ);
                 playParticle(location, particle, count, offsetX, offsetY, offsetZ, speed, data);
                 location.subtract(fixX, y, fixZ);
                 return true;
             }, null);
-            case XZ -> Timer.repeat(plugin, false, repeat + 1, 0, period, null, restTimes -> {
+            case XZ -> TimerUtils.repeat(plugin, false, repeat + 1, 0, period, null, restTimes -> {
                 double radians = Math.toRadians(atomicDouble.getAndAdd(stepAngle)), x = radius * Math.sin(radians), z = radius * Math.cos(radians), fixX = - x * fixCos - z * fixSin, fixZ = z * fixCos - x * fixSin;
                 location.add(fixX, 0, fixZ);
                 playParticle(location, particle, count, offsetX, offsetY, offsetZ, speed, data);
@@ -191,7 +191,7 @@ public abstract class AbstractSkill {
     protected <T> void play3DParticleAnimation(@NotNull Location location, @NotNull Particle particle, boolean reverse, int count, double offsetX, double offsetY, double offsetZ, double speed, @Nullable T data, double startAngle, double endAngle, double radius, int repeat, int period) {
         AtomicDouble atomicDouble = new AtomicDouble(startAngle);
         double stepAngle = (endAngle - startAngle) / (double) repeat, fixRadians = Math.toRadians(location.getYaw()), fixSin = Math.sin(fixRadians), fixCos = Math.cos(fixRadians);
-        Timer.repeat(plugin, false, repeat + 1, 0, period, null, restTimes -> {
+        TimerUtils.repeat(plugin, false, repeat + 1, 0, period, null, restTimes -> {
             double radians = Math.toRadians(atomicDouble.getAndAdd(stepAngle)), x = radius * Math.sin(radians), z = radius * Math.cos(radians), y = Math.sin(radians), fixX = reverse ? x * fixCos + z * fixSin : - x * fixCos - z * fixSin, fixZ = reverse ? x * fixSin - z * fixCos : z * fixCos - x * fixSin;
             location.add(fixX, y, fixZ);
             playParticle(location, particle, count, offsetX, offsetY, offsetZ, speed, data);
@@ -227,8 +227,8 @@ public abstract class AbstractSkill {
      * @param repeatFinishHandler 重复结束时处理
      */
     protected void charge(@NotNull Player player, int repeat, int delay, int period, double velocity, @Nullable RepeatStartHandler repeatStartHandler, @Nullable RepeatRunHandler repeatRunHandler, @Nullable RepeatFinishHandler repeatFinishHandler) {
-        Vector vector = TargetUtils.fixDirection(player.getLocation(), velocity);
-        Timer.repeat(plugin, false, repeat, delay, period, repeatStartHandler, restTimes -> {
+        Vector vector = TargetUtils.correctDirection(player.getLocation(), velocity);
+        TimerUtils.repeat(plugin, false, repeat, delay, period, repeatStartHandler, restTimes -> {
             if (canProceed(player) && (repeatRunHandler == null || repeatRunHandler.handle(restTimes))) {
                 player.setVelocity(vector);
                 return true;
@@ -249,7 +249,7 @@ public abstract class AbstractSkill {
      * @param repeatFinishHandler 重复结束时处理
      */
     protected void rotation(@NotNull Player player, int repeat, int delay, int period, float yaw, @Nullable RepeatStartHandler repeatStartHandler, @Nullable RepeatRunHandler repeatRunHandler, @Nullable RepeatFinishHandler repeatFinishHandler) {
-        Timer.repeat(plugin, false, repeat, delay, period, repeatStartHandler, restTimes -> {
+        TimerUtils.repeat(plugin, false, repeat, delay, period, repeatStartHandler, restTimes -> {
             if (canProceed(player) && (repeatRunHandler == null || repeatRunHandler.handle(restTimes))) {
                 player.setRotation(player.getLocation().getYaw() + yaw, 0.0F);
                 return true;

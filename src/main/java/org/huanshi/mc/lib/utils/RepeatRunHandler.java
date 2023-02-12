@@ -1,4 +1,4 @@
-package org.huanshi.mc.lib.timer;
+package org.huanshi.mc.lib.utils;
 
 /**
  * 重复运行时处理
@@ -7,7 +7,7 @@ package org.huanshi.mc.lib.timer;
 public interface RepeatRunHandler {
     /**
      * 处理
-     * @param restTimes 剩余次数
+     * @param remainRepeat 剩余重复次数
      */
-    boolean handle(int restTimes);
+    boolean handle(int remainRepeat);
 }

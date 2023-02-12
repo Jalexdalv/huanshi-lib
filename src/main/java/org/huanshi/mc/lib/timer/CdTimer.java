@@ -2,6 +2,7 @@ package org.huanshi.mc.lib.timer;
 
 import org.bukkit.entity.Player;
 import org.huanshi.mc.lib.lang.Zh;
+import org.huanshi.mc.lib.utils.TimerUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,28 +22,28 @@ public class CdTimer {
     /**
      * 启动
      * @param player 玩家
-     * @param cd CD（秒）
+     * @param duration 时长（毫秒）
      * @param reentry 是否重入
      * @param timerReentryHandler 计时器重入时处理
      * @param timerStartHandler 计时器启动时处理
      * @param timerRunHandler 计时器运行时处理
      */
-    public void run(@NotNull Player player, double cd, boolean reentry, @Nullable TimerReentryHandler timerReentryHandler, @Nullable TimerStartHandler timerStartHandler, @Nullable TimerRunHandler timerRunHandler) {
+    public void run(@NotNull Player player, long duration, boolean reentry, @Nullable TimerReentryHandler timerReentryHandler, @Nullable TimerStartHandler timerStartHandler, @Nullable TimerRunHandler timerRunHandler) {
         UUID uuid = player.getUniqueId();
-        double restTime = Math.max((double) (finishTimeMap.getOrDefault(uuid, 0L) - System.currentTimeMillis()) / (double) 1000, 0);
-        if (restTime > 0) {
+        long remainDuration = Math.max(finishTimeMap.getOrDefault(uuid, 0L) - System.currentTimeMillis(), 0);
+        if (remainDuration > 0) {
             if (reentry) {
                 if (timerReentryHandler == null || timerReentryHandler.handle()) {
-                    finishTimeMap.merge(uuid, System.currentTimeMillis() + Math.round(cd * 1000L), Math::max);
+                    finishTimeMap.merge(uuid, System.currentTimeMillis() + duration, Math::max);
                 }
             } else {
                 if (timerRunHandler != null) {
-                    timerRunHandler.handle(restTime);
+                    timerRunHandler.handle(remainDuration);
                 }
-                player.sendActionBar(Zh.cd(restTime));
+                player.sendActionBar(Zh.cd(TimerUtils.convertMillisecondToSecond(remainDuration)));
             }
         } else if (timerStartHandler == null || timerStartHandler.handle()) {
-            finishTimeMap.put(uuid, System.currentTimeMillis() + Math.round(cd * 1000L));
+            finishTimeMap.put(uuid, System.currentTimeMillis() + duration);
         }
     }
 

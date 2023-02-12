@@ -1,6 +1,7 @@
 package org.huanshi.mc.lib.service;
 
 import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.huanshi.mc.lib.Plugin;
@@ -23,8 +24,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class CombatService extends AbstractService {
     @Autowired
     private Plugin plugin;
-    @Autowired(file = "config.yml", path = "combat.time")
-    private double time;
+    @Autowired(file = "config.yml", path = "combat.duration")
+    private long duration;
+    @Autowired(file = "config.yml", path = "combat.period")
+    private int period;
     private final Map<UUID, BossBar> bossBarMap = new ConcurrentHashMap<>();
     private final Timer timer = new Timer();
 
@@ -34,12 +37,12 @@ public class CombatService extends AbstractService {
      */
     public void enter(@NotNull Player player) {
         UUID uuid = player.getUniqueId();
-        timer.run(plugin, uuid, true, true, (int) Math.ceil(time * 2), 10, null,
+        timer.run(plugin, uuid, true, true, duration, 0, period, null,
             () -> {
                 Bukkit.getScheduler().runTask(plugin, () -> Bukkit.getPluginManager().callEvent(new PlayerToggleCombatEvent(player, true)));
-                bossBarMap.putIfAbsent(uuid, BossBar.bossBar(Zh.combat(time), 1.0F, BossBar.Color.RED, BossBar.Overlay.PROGRESS));
+                bossBarMap.putIfAbsent(uuid, BossBar.bossBar(Component.empty(), 1.0F, BossBar.Color.RED, BossBar.Overlay.PROGRESS));
                 return true;
-            }, restTime -> player.showBossBar(bossBarMap.get(uuid).name(Zh.combat(restTime)).progress((float) restTime / (float) time)),
+            }, remainDuration -> player.showBossBar(bossBarMap.get(uuid).name(Zh.combat(remainDuration)).progress((float) remainDuration / (float) duration)),
             () -> {
                 Bukkit.getScheduler().runTask(plugin, () -> Bukkit.getPluginManager().callEvent(new PlayerToggleCombatEvent(player, false)));
                 player.hideBossBar(bossBarMap.get(uuid));

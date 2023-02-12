@@ -10,25 +10,25 @@ import java.util.Collection;
 
 public class TargetUtils {
     /**
-     * 修复位置
+     * 修正位置
      * @param location 位置
      * @param x x轴相对坐标
      * @param y y轴相对坐标
      * @param z z轴相对坐标
      * @return 位置
      */
-    public static @NotNull Location fixLocation(@NotNull Location location, double x, double y, double z) {
+    public static @NotNull Location correctLocation(@NotNull Location location, double x, double y, double z) {
         double radians = Math.toRadians(location.getYaw()), sin = Math.sin(radians), cos = Math.cos(radians);
         return location.clone().add(-x * cos - z * sin, y, z * cos - x * sin);
     }
 
     /**
-     * 修复方向
+     * 修正方向
      * @param location 位置
      * @param distance 距离
      * @return 方向
      */
-    public static @NotNull Vector fixDirection(@NotNull Location location, double distance) {
+    public static @NotNull Vector correctDirection(@NotNull Location location, double distance) {
         location.setPitch(0.0F);
         return location.getDirection().multiply(distance);
     }
@@ -45,7 +45,7 @@ public class TargetUtils {
      * @return 长方体区域
      */
     public static @NotNull BoundingBox getBoundingBox(@NotNull Location location, double x1, double y1, double z1, double x2, double y2, double z2) {
-        return BoundingBox.of(fixLocation(location, x1, y1, z1), fixLocation(location, x2, y2, z2));
+        return BoundingBox.of(correctLocation(location, x1, y1, z1), correctLocation(location, x2, y2, z2));
     }
 
     /**
