@@ -8,10 +8,6 @@ import org.jetbrains.annotations.NotNull;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-/**
- * 抽象数据映射
- * @author Jalexdalv
- */
 public abstract class AbstractMapper {
     private static HikariDataSource hikariDataSource;
     @Autowired(file = "db.yml", path = "hikari-cp.connection-timeout")
@@ -31,9 +27,6 @@ public abstract class AbstractMapper {
     @Autowired(file = "db.yml", path = "mysql.password")
     private String password;
 
-    /**
-     * 加载
-     */
     public void load() {
         if (hikariDataSource == null) {
             HikariConfig hikariConfig = new HikariConfig();
@@ -48,11 +41,6 @@ public abstract class AbstractMapper {
         }
     }
 
-    /**
-     * 获取MySQL连接
-     * @return MySQL连接
-     * @throws SQLException 数据库操作异常
-     */
     protected @NotNull Connection getMySQLConnection() throws SQLException {
         return hikariDataSource.getConnection();
     }

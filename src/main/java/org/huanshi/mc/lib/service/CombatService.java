@@ -16,10 +16,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * 战斗状态服务
- * @author Jalexdalv
- */
 @Service
 public class CombatService extends AbstractService {
     @Autowired
@@ -31,11 +27,7 @@ public class CombatService extends AbstractService {
     private final Map<UUID, BossBar> bossBarMap = new ConcurrentHashMap<>();
     private final Timer timer = new Timer();
 
-    /**
-     * 进入
-     * @param player 玩家
-     */
-    public void enter(@NotNull Player player) {
+    public void run(@NotNull Player player) {
         UUID uuid = player.getUniqueId();
         timer.run(plugin, uuid, true, true, duration, 0, period, null,
             () -> {
@@ -51,20 +43,11 @@ public class CombatService extends AbstractService {
         );
     }
 
-    /**
-     * 离开
-     * @param uuid UUID
-     */
-    public void exit(@NotNull UUID uuid) {
+    public void clear(@NotNull UUID uuid) {
         timer.clear(uuid);
     }
 
-    /**
-     * 判断是否处于战斗状态
-     * @param uuid UUID
-     * @return 是否处于战斗状态
-     */
-    public boolean isCombating(@NotNull UUID uuid) {
+    public boolean isRunning(@NotNull UUID uuid) {
         return timer.isRunning(uuid);
     }
 }

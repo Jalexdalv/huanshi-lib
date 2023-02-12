@@ -14,7 +14,7 @@ public class PlayerDropItemListener extends AbstractListener {
 
     @EventHandler
     public void onPlayerDropItem(@NotNull PlayerDropItemEvent playerDropItemEvent) {
-        if (skillService.isCasting(playerDropItemEvent.getPlayer().getUniqueId())) {
+        if (skillService.isRunning(playerDropItemEvent.getPlayer().getUniqueId())) {
             playerDropItemEvent.setCancelled(true);
         }
     }

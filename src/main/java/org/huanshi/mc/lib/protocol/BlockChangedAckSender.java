@@ -12,19 +12,11 @@ import org.huanshi.mc.lib.annotation.SendHandler;
 import org.huanshi.mc.lib.annotation.Sender;
 import org.huanshi.mc.lib.event.PlayerBlockEvent;
 
-/**
- * BlockChangedAck 数据包发送器
- * @author Jalexdalv
- */
 @Sender
 public class BlockChangedAckSender extends AbstractSender {
     @Autowired
     private Plugin plugin;
 
-    /**
-     * BlockChangedAck 数据包发送监听器
-     * @return 数据包适配器
-     */
     @SendHandler
     public PacketAdapter onBlockChangedAck() {
         return new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.BLOCK_CHANGED_ACK) {

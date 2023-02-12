@@ -14,7 +14,7 @@ public class PlayerItemHeldListener extends AbstractListener {
 
     @EventHandler
     public void onPlayerItemHeld(@NotNull PlayerItemHeldEvent playerItemHeldEvent) {
-        if (skillService.isCasting(playerItemHeldEvent.getPlayer().getUniqueId())) {
+        if (skillService.isRunning(playerItemHeldEvent.getPlayer().getUniqueId())) {
             playerItemHeldEvent.setCancelled(true);
         }
     }

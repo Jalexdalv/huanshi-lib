@@ -15,7 +15,7 @@ public class InventoryInteractListener extends AbstractListener {
 
     @EventHandler
     public void onInventoryInteract(@NotNull InventoryInteractEvent inventoryInteractEvent) {
-        if (inventoryInteractEvent.getWhoClicked() instanceof Player player && inventoryInteractEvent.getInventory() == player.getInventory() && skillService.isCasting(player.getUniqueId())) {
+        if (inventoryInteractEvent.getWhoClicked() instanceof Player player && inventoryInteractEvent.getInventory() == player.getInventory() && skillService.isRunning(player.getUniqueId())) {
             inventoryInteractEvent.setCancelled(true);
         }
     }

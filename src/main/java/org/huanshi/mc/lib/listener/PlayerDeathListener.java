@@ -9,25 +9,17 @@ import org.huanshi.mc.lib.protocol.CommandsSender;
 import org.huanshi.mc.lib.service.CombatService;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * PlayerDeathEvent 事件监听器
- * @author Jalexdalv
- */
 @Listener
 public class PlayerDeathListener extends AbstractListener {
     @Autowired
-    private CommandsSender commandsSender;
-    @Autowired
     private CombatService combatService;
+    @Autowired
+    private CommandsSender commandsSender;
 
-    /**
-     * PlayerDeathEvent 事件发生时处理
-     * @param playerDeathEvent PlayerDeathEvent 事件
-     */
     @EventHandler
     public void onPlayerDeath(@NotNull PlayerDeathEvent playerDeathEvent) {
         Player player = playerDeathEvent.getPlayer();
-        combatService.exit(player.getUniqueId());
+        combatService.run(player);
         commandsSender.autoRespawn(player);
     }
 }

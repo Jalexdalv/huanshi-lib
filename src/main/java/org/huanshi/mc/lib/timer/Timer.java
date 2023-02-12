@@ -12,45 +12,27 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * 计时器
- * @author: Jalexdalv
- */
 public class Timer {
-    private final Map<UUID, Integer> remainRepeatMap = new ConcurrentHashMap<>();
+    private final Map<UUID, Integer> repeatMap = new ConcurrentHashMap<>();
 
-    /**
-     * 启动
-     * @param plugin 插件
-     * @param uuid UUID
-     * @param async 是否异步
-     * @param reentry 是否重入
-     * @param duration 时长（毫秒）
-     * @param delay 延迟（tick）
-     * @param period 间隔（tick）
-     * @param timerReentryHandler 计时器重入时处理
-     * @param timerStartHandler 计时器启动时处理
-     * @param timerRunHandler 计时器运行时处理
-     * @param timerFinishHandler 计时器结束时处理
-     */
     public void run(@NotNull AbstractPlugin plugin, @NotNull UUID uuid, boolean async, boolean reentry, long duration, int delay, int period, @Nullable TimerReentryHandler timerReentryHandler, @Nullable TimerStartHandler timerStartHandler, @Nullable TimerRunHandler timerRunHandler, @Nullable TimerFinishHandler timerFinishHandler) {
         if (isRunning(uuid)) {
             if (reentry && (timerReentryHandler == null || timerReentryHandler.handle())) {
-                remainRepeatMap.merge(uuid, TimerUtils.convertMillisecondToRepeat(duration, period), Integer::max);
+                repeatMap.merge(uuid, TimerUtils.convertMillisecondToRepeat(duration, period), Integer::max);
             }
         } else if (timerStartHandler == null || timerStartHandler.handle()) {
-            remainRepeatMap.put(uuid, TimerUtils.convertMillisecondToRepeat(duration, period));
+            repeatMap.put(uuid, TimerUtils.convertMillisecondToRepeat(duration, period));
             BukkitRunnable bukkitRunnable = new BukkitRunnable() {
                 @Override
                 public void run() {
-                    Integer remainRepeat = remainRepeatMap.getOrDefault(uuid, 0);
+                    Integer remainRepeat = repeatMap.getOrDefault(uuid, 0);
                     if (remainRepeat > 0) {
-                        remainRepeatMap.put(uuid, remainRepeat - 1);
                         if (timerRunHandler != null) {
                             timerRunHandler.handle(TimerUtils.convertRepeatToMillisecond(remainRepeat, period));
                         }
+                        repeatMap.put(uuid, remainRepeat - 1);
                     } else if (timerFinishHandler == null || timerFinishHandler.handle()) {
-                        remainRepeatMap.remove(uuid);
+                        repeatMap.remove(uuid);
                         cancel();
                     }
                 }
@@ -63,34 +45,21 @@ public class Timer {
         }
     }
 
-    /**
-     * 清除
-     * @param uuid UUID
-     */
     public void clear(@NotNull UUID uuid) {
-        remainRepeatMap.remove(uuid);
+        repeatMap.remove(uuid);
     }
 
-    /**
-     * 获取正在运行的集合
-     * @return UUID
-     */
     public @NotNull Set<UUID> getRunnings() {
-        Set<UUID> runningSet = new HashSet<>();
-        for (Map.Entry<UUID, Integer> entry : remainRepeatMap.entrySet()) {
+        Set<UUID> set = new HashSet<>();
+        for (Map.Entry<UUID, Integer> entry : repeatMap.entrySet()) {
             if (entry.getValue() > 0) {
-                runningSet.add(entry.getKey());
+                set.add(entry.getKey());
             }
         }
-        return runningSet;
+        return set;
     }
 
-    /**
-     * 判断是否正在运行
-     * @param uuid UUID
-     * @return 是否正在运行
-     */
     public boolean isRunning(@NotNull UUID uuid) {
-        return remainRepeatMap.getOrDefault(uuid, 0) > 0;
+        return repeatMap.getOrDefault(uuid, 0) > 0;
     }
 }

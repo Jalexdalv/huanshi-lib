@@ -2,32 +2,26 @@ package org.huanshi.mc.lib.listener;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerCommandSendEvent;
-import org.huanshi.mc.lib.Plugin;
-import org.huanshi.mc.lib.annotation.Autowired;
+import org.huanshi.mc.lib.annotation.Data;
 import org.huanshi.mc.lib.annotation.Listener;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
+import java.util.Set;
 
-/**
- * PlayerCommandSendEvent 事件监听器
- * @author Jalexdalv
- */
 @Listener
 public class PlayerCommandSendListener extends AbstractListener {
-    @Autowired
-    private Plugin plugin;
+    @Data(name = "COMMAND_SET")
+    private Set<String> commandSet;
+    @Data(name = "OP_COMMAND_SET")
+    private Set<String> opCommandSet;
 
-    /**
-     * PlayerCommandSendEvent 事件发生时处理
-     * @param playerCommandSendEvent PlayerCommandSendEvent 事件
-     */
     @EventHandler
     public void onPlayerCommandSend(@NotNull PlayerCommandSendEvent playerCommandSendEvent) {
-        if (!playerCommandSendEvent.getPlayer().isOp()) {
-            Collection<String> commandCollection = playerCommandSendEvent.getCommands();
-            commandCollection.clear();
-            commandCollection.addAll(plugin.getCommands());
-        }
+//        Collection<String> collection = playerCommandSendEvent.getCommands();
+//        collection.clear();
+//        collection.addAll(commandSet);
+//        if (playerCommandSendEvent.getPlayer().isOp()) {
+//            collection.addAll(opCommandSet);
+//        }
     }
 }
