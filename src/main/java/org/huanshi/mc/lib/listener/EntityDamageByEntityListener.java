@@ -16,10 +16,10 @@ public class EntityDamageByEntityListener extends AbstractListener {
     @EventHandler
     public void onEntityDamageByEntity(@NotNull EntityDamageByEntityEvent entityDamageByEntityEvent) {
         if (entityDamageByEntityEvent.getEntity() instanceof Player player) {
-            combatService.run(player);
+            combatService.start(player);
         }
         if (entityDamageByEntityEvent.getDamager() instanceof Player player) {
-            combatService.run(player);
+            combatService.start(player);
         }
     }
 }

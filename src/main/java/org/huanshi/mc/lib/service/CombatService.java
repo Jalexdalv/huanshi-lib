@@ -22,20 +22,19 @@ public class CombatService extends AbstractService {
     private Plugin plugin;
     @Autowired(file = "config.yml", path = "combat.duration")
     private long duration;
-    @Autowired(file = "config.yml", path = "combat.period")
-    private int period;
     private final Map<UUID, BossBar> bossBarMap = new ConcurrentHashMap<>();
     private final Timer timer = new Timer();
 
-    public void run(@NotNull Player player) {
+    public void start(@NotNull Player player) {
         UUID uuid = player.getUniqueId();
-        timer.run(plugin, uuid, true, true, duration, 0, period, null,
-            () -> {
+        timer.reentry(plugin, player, true, duration, 0, 10, null, () -> {
                 Bukkit.getScheduler().runTask(plugin, () -> Bukkit.getPluginManager().callEvent(new PlayerToggleCombatEvent(player, true)));
                 bossBarMap.putIfAbsent(uuid, BossBar.bossBar(Component.empty(), 1.0F, BossBar.Color.RED, BossBar.Overlay.PROGRESS));
                 return true;
-            }, remainDuration -> player.showBossBar(bossBarMap.get(uuid).name(Zh.combat(remainDuration)).progress((float) remainDuration / (float) duration)),
-            () -> {
+            }, durationLeft -> {
+                player.showBossBar(bossBarMap.get(uuid).name(Zh.combat(durationLeft)).progress((float) durationLeft / (float) duration));
+                return true;
+            }, () -> {
                 Bukkit.getScheduler().runTask(plugin, () -> Bukkit.getPluginManager().callEvent(new PlayerToggleCombatEvent(player, false)));
                 player.hideBossBar(bossBarMap.get(uuid));
                 return true;
@@ -43,11 +42,19 @@ public class CombatService extends AbstractService {
         );
     }
 
-    public void clear(@NotNull UUID uuid) {
-        timer.clear(uuid);
+    public void stop(@NotNull UUID uuid) {
+        timer.stop(uuid);
+    }
+
+    public void stop(@NotNull Player player) {
+        timer.stop(player);
     }
 
     public boolean isRunning(@NotNull UUID uuid) {
         return timer.isRunning(uuid);
+    }
+
+    public boolean isRunning(@NotNull Player player) {
+        return timer.isRunning(player);
     }
 }

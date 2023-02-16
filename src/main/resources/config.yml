@@ -2,14 +2,3 @@ command:
   cd: 3000
 combat:
   duration: 15000
-  period: 10
-invincible:
-  period: 10
-root:
-  period: 10
-silence:
-  period: 10
-steady:
-  period: 10
-stun:
-  period: 10

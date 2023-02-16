@@ -8,6 +8,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
+import org.huanshi.mc.lib.Component;
 import org.huanshi.mc.lib.annotation.Autowired;
 import org.huanshi.mc.lib.lang.Zh;
 import org.huanshi.mc.lib.service.CombatService;
@@ -19,7 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-public abstract class AbstractCommand implements TabExecutor {
+public abstract class AbstractCommand implements Component, TabExecutor {
     @Autowired
     private CombatService combatService;
     private Environment environment;
@@ -35,6 +36,18 @@ public abstract class AbstractCommand implements TabExecutor {
         this.permission = permission;
         this.head = head;
         argList = Arrays.asList(args);
+    }
+
+    protected boolean onConsoleCommand(@NotNull ConsoleCommandSender consoleCommandSender, @NotNull String @NotNull [] args) {
+        return true;
+    }
+
+    protected boolean onPlayerCommand(@NotNull Player player, @NotNull String @NotNull [] args) {
+        return true;
+    }
+
+    protected @Nullable List<String> onPlayerTabComplete(@NotNull Player player, @NotNull String @NotNull [] args) {
+        return emptyTabList;
     }
 
     @Override
@@ -63,16 +76,10 @@ public abstract class AbstractCommand implements TabExecutor {
         return null;
     }
 
-    protected boolean onConsoleCommand(@NotNull ConsoleCommandSender consoleCommandSender, @NotNull String @NotNull [] args) {
-        return true;
-    }
-
-    protected boolean onPlayerCommand(@NotNull Player player, @NotNull String @NotNull [] args) {
-        return true;
-    }
-
-    protected @Nullable List<String> onPlayerTabComplete(@NotNull Player player, @NotNull String @NotNull [] args) {
-        return emptyTabList;
+    public void register() {
+        PluginCommand pluginCommand = Objects.requireNonNull(Bukkit.getPluginCommand(head));
+        pluginCommand.setExecutor(this);
+        pluginCommand.setTabCompleter(this);
     }
 
     public @Nullable Player findPlayer(@NotNull Player player, @NotNull String targetPlayerName) {
@@ -91,14 +98,8 @@ public abstract class AbstractCommand implements TabExecutor {
         return world;
     }
 
-    public void register() {
-        PluginCommand pluginCommand = Objects.requireNonNull(Bukkit.getPluginCommand(head));
-        pluginCommand.setExecutor(this);
-        pluginCommand.setTabCompleter(this);
-    }
-
     public boolean canUse(@NotNull Player player) {
-        if (!combat && combatService.isRunning(player.getUniqueId())) {
+        if (!combat && combatService.isRunning(player)) {
             player.sendMessage(Zh.CANNOT_USE_COMMAND_IN_COMBAT);
             return false;
         } else if (!hasPermission(player)) {

@@ -1,5 +1,5 @@
 package org.huanshi.mc.lib.timer;
 
-public interface TimerFinishHandler {
+public interface TimerStopHandler {
     boolean handle();
 }

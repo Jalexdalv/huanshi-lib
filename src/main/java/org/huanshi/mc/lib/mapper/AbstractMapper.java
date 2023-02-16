@@ -2,13 +2,14 @@ package org.huanshi.mc.lib.mapper;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.huanshi.mc.lib.Component;
 import org.huanshi.mc.lib.annotation.Autowired;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public abstract class AbstractMapper {
+public abstract class AbstractMapper implements Component {
     private static HikariDataSource hikariDataSource;
     @Autowired(file = "db.yml", path = "hikari-cp.connection-timeout")
     private long timeout;

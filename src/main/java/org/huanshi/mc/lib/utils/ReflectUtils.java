@@ -15,34 +15,34 @@ import java.util.jar.JarFile;
 
 public class ReflectUtils {
     public static @NotNull List<Method> getMethods(@NotNull Class<?> clazz) {
-        List<Method> list = new LinkedList<>();
+        List<Method> methodList = new LinkedList<>();
         while (clazz != null && StringUtils.startsWith(clazz.getPackageName(), "org.huanshi.mc")) {
-            list.addAll(0, Arrays.asList(clazz.getDeclaredMethods()));
+            methodList.addAll(0, Arrays.asList(clazz.getDeclaredMethods()));
             clazz = clazz.getSuperclass();
         }
-        return list;
+        return methodList;
     }
 
     public static @NotNull List<Field> getFields(@NotNull Class<?> clazz) {
-        List<Field> list = new LinkedList<>();
+        List<Field> fieldList = new LinkedList<>();
         while (clazz != null && StringUtils.startsWith(clazz.getPackageName(), "org.huanshi.mc")) {
-            list.addAll(0, Arrays.asList(clazz.getDeclaredFields()));
+            fieldList.addAll(0, Arrays.asList(clazz.getDeclaredFields()));
             clazz = clazz.getSuperclass();
         }
-        return list;
+        return fieldList;
     }
 
     public static @NotNull List<Class<?>> getJarClasses(@NotNull Class<?> clazz) throws IOException, ClassNotFoundException {
-        List<Class<?>> list = new LinkedList<>();
+        List<Class<?>> classList = new LinkedList<>();
         try (JarFile jarFile = new JarFile(clazz.getProtectionDomain().getCodeSource().getLocation().getPath())) {
-            Enumeration<JarEntry> enumeration = jarFile.entries();
-            while (enumeration.hasMoreElements()) {
-                String name = enumeration.nextElement().getName();
+            Enumeration<JarEntry> jarEntryEnumeration = jarFile.entries();
+            while (jarEntryEnumeration.hasMoreElements()) {
+                String name = jarEntryEnumeration.nextElement().getName();
                 if (StringUtils.startsWith(name, "org/huanshi/mc") && StringUtils.endsWith(name, ".class") && !StringUtils.contains(name, "$")) {
-                    list.add(Class.forName(StringUtils.replace(name, "/", ".").replaceAll(".class", "")));
+                    classList.add(Class.forName(StringUtils.replace(name, "/", ".").replaceAll(".class", "")));
                 }
             }
         }
-        return list;
+        return classList;
     }
 }

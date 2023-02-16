@@ -19,7 +19,7 @@ public class PlayerDeathListener extends AbstractListener {
     @EventHandler
     public void onPlayerDeath(@NotNull PlayerDeathEvent playerDeathEvent) {
         Player player = playerDeathEvent.getPlayer();
-        combatService.run(player);
+        combatService.start(player);
         commandsSender.autoRespawn(player);
     }
 }

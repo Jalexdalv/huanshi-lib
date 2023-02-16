@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.huanshi.mc.lib.AbstractPlugin;
+import org.huanshi.mc.lib.Component;
 import org.huanshi.mc.lib.annotation.Autowired;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -17,7 +18,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-public abstract class AbstractConfig {
+public abstract class AbstractConfig implements Component {
     @Autowired
     private AbstractPlugin plugin;
     private File file;
@@ -33,15 +34,14 @@ public abstract class AbstractConfig {
             } else {
                 configuration = YamlConfiguration.loadConfiguration(inputStreamReader);
             }
-        } finally {
-            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                try {
-                    save();
-                } catch (IOException ioException) {
-                    throw new RuntimeException(ioException);
-                }
-            });
         }
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            try {
+                save();
+            } catch (IOException ioException) {
+                throw new RuntimeException(ioException);
+            }
+        });
     }
 
     public void save() throws IOException {

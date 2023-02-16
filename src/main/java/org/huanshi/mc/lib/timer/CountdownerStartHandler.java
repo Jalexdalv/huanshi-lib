@@ -1,5 +1,5 @@
 package org.huanshi.mc.lib.timer;
 
-public interface TimerReentryHandler {
+public interface CountdownerStartHandler {
     boolean handle();
 }

@@ -1,8 +1,8 @@
 package org.huanshi.mc.lib.timer;
 
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.huanshi.mc.lib.AbstractPlugin;
-import org.huanshi.mc.lib.utils.TimerUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,53 +13,100 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Timer {
-    private final Map<UUID, Integer> repeatMap = new ConcurrentHashMap<>();
+    private final Map<UUID, Long> durationMap = new ConcurrentHashMap<>();
 
-    public void run(@NotNull AbstractPlugin plugin, @NotNull UUID uuid, boolean async, boolean reentry, long duration, int delay, int period, @Nullable TimerReentryHandler timerReentryHandler, @Nullable TimerStartHandler timerStartHandler, @Nullable TimerRunHandler timerRunHandler, @Nullable TimerFinishHandler timerFinishHandler) {
-        if (isRunning(uuid)) {
-            if (reentry && (timerReentryHandler == null || timerReentryHandler.handle())) {
-                repeatMap.merge(uuid, TimerUtils.convertMillisecondToRepeat(duration, period), Integer::max);
-            }
-        } else if (timerStartHandler == null || timerStartHandler.handle()) {
-            repeatMap.put(uuid, TimerUtils.convertMillisecondToRepeat(duration, period));
-            BukkitRunnable bukkitRunnable = new BukkitRunnable() {
-                @Override
-                public void run() {
-                    Integer remainRepeat = repeatMap.getOrDefault(uuid, 0);
-                    if (remainRepeat > 0) {
-                        if (timerRunHandler != null) {
-                            timerRunHandler.handle(TimerUtils.convertRepeatToMillisecond(remainRepeat, period));
+    public void start(@NotNull AbstractPlugin plugin, @NotNull Player player, boolean async, long duration, int delay, int period, @Nullable TimerStartHandler timerStartHandler, @Nullable TimerRunHandler timerRunHandler, @Nullable TimerStopHandler timerStopHandler) {
+        UUID uuid = player.getUniqueId();
+        if (!isRunning(uuid)) {
+            if (timerStartHandler == null || timerStartHandler.handle()) {
+                durationMap.put(uuid, duration);
+                BukkitRunnable bukkitRunnable = new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        long durationLeft = getDurationLeft(uuid);
+                        if (durationLeft > 0) {
+                            if (timerRunHandler == null || timerRunHandler.handle(durationLeft)) {
+                                durationMap.put(uuid, Math.max(durationLeft - 50L * period, 0L));
+                            }
+                        } else if (timerStopHandler == null || timerStopHandler.handle()) {
+                            durationMap.remove(uuid);
+                            cancel();
                         }
-                        repeatMap.put(uuid, remainRepeat - 1);
-                    } else if (timerFinishHandler == null || timerFinishHandler.handle()) {
-                        repeatMap.remove(uuid);
-                        cancel();
                     }
+                };
+                if (async) {
+                    bukkitRunnable.runTaskTimerAsynchronously(plugin, delay, period);
+                } else {
+                    bukkitRunnable.runTaskTimer(plugin, delay, period);
                 }
-            };
-            if (async) {
-                bukkitRunnable.runTaskTimerAsynchronously(plugin, delay, period);
-            } else {
-                bukkitRunnable.runTaskTimer(plugin, delay, period);
             }
         }
     }
 
-    public void clear(@NotNull UUID uuid) {
-        repeatMap.remove(uuid);
+    public void reentry(@NotNull AbstractPlugin plugin, @NotNull Player player, boolean async, long duration, int delay, int period, @Nullable TimerReentryHandler timerReentryHandler, @Nullable TimerStartHandler timerStartHandler, @Nullable TimerRunHandler timerRunHandler, @Nullable TimerStopHandler timerStopHandler) {
+        UUID uuid = player.getUniqueId();
+        if (isRunning(uuid)) {
+            if (timerReentryHandler == null || timerReentryHandler.handle()) {
+                durationMap.merge(uuid, duration, Long::max);
+            }
+        } else {
+            if (timerStartHandler == null || timerStartHandler.handle()) {
+                durationMap.put(uuid, duration);
+                BukkitRunnable bukkitRunnable = new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        long durationLeft = getDurationLeft(uuid);
+                        if (durationLeft > 0) {
+                            if (timerRunHandler == null || timerRunHandler.handle(durationLeft)) {
+                                durationMap.put(uuid, Math.max(durationLeft - 50L * period, 0L));
+                            }
+                        } else if (timerStopHandler == null || timerStopHandler.handle()) {
+                            durationMap.remove(uuid);
+                            cancel();
+                        }
+                    }
+                };
+                if (async) {
+                    bukkitRunnable.runTaskTimerAsynchronously(plugin, delay, period);
+                } else {
+                    bukkitRunnable.runTaskTimer(plugin, delay, period);
+                }
+            }
+        }
+    }
+
+    public void stop(@NotNull UUID uuid) {
+        durationMap.remove(uuid);
+    }
+
+    public void stop(@NotNull Player player) {
+        stop(player.getUniqueId());
     }
 
     public @NotNull Set<UUID> getRunnings() {
-        Set<UUID> set = new HashSet<>();
-        for (Map.Entry<UUID, Integer> entry : repeatMap.entrySet()) {
+        Set<UUID> runningSet = new HashSet<>();
+        for (Map.Entry<UUID, Long> entry : durationMap.entrySet()) {
             if (entry.getValue() > 0) {
-                set.add(entry.getKey());
+                runningSet.add(entry.getKey());
             }
         }
-        return set;
+        return runningSet;
+    }
+
+    public long getDurationLeft(@NotNull UUID uuid) {
+        return durationMap.getOrDefault(uuid, 0L);
+    }
+
+    public long getDurationLeft(@NotNull Player player) {
+        return getDurationLeft(player.getUniqueId());
     }
 
     public boolean isRunning(@NotNull UUID uuid) {
-        return repeatMap.getOrDefault(uuid, 0) > 0;
+        Long duration = durationMap.get(uuid);
+        return duration != null && duration > 0;
+    }
+
+    public boolean isRunning(@NotNull Player player) {
+        return isRunning(player.getUniqueId());
     }
 }
