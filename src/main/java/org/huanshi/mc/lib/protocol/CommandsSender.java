@@ -10,8 +10,8 @@ import org.jetbrains.annotations.NotNull;
 @Protocol
 public class CommandsSender extends AbstractProtocol {
     public void autoRespawn(@NotNull Player player) {
-        PacketContainer packetContainer = new PacketContainer(PacketType.Play.Server.COMMANDS);
+        PacketContainer packetContainer = new PacketContainer(PacketType.Play.Client.CLIENT_COMMAND);
         packetContainer.getClientCommands().write(0, EnumWrappers.ClientCommand.PERFORM_RESPAWN);
-        getProtocolManager().sendServerPacket(player, packetContainer, false);
+        getProtocolManager().receiveClientPacket(player, packetContainer, false);
     }
 }
