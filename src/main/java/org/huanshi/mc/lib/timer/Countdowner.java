@@ -63,6 +63,38 @@ public class Countdowner {
         }
     }
 
+    public void reentry(@NotNull AbstractPlugin plugin, @NotNull Entity entity, boolean async, int repeat, int delay, int period, @Nullable CountdownerReentryHandler countdownerReentryHandler, @Nullable CountdownerStartHandler countdownerStartHandler, @Nullable CountdownerRunHandler countdownerRunHandler, @Nullable CountdownerStopHandler countdownerStopHandler) {
+        UUID uuid = entity.getUniqueId();
+        if (isRunning(uuid)) {
+            if (countdownerReentryHandler == null || countdownerReentryHandler.handle()) {
+                repeatMap.merge(uuid, repeat, Integer::max);
+            }
+        } else {
+            if (countdownerStartHandler == null || countdownerStartHandler.handle()) {
+                repeatMap.put(uuid, repeat);
+                BukkitRunnable bukkitRunnable = new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        int repeatLeft = getRepeatLeft(uuid);
+                        if (repeatLeft > 0) {
+                            if (countdownerRunHandler == null || countdownerRunHandler.handle(repeatLeft)) {
+                                repeatMap.put(uuid, Math.max(repeatLeft - 1, 0));
+                            }
+                        } else if (countdownerStopHandler == null || countdownerStopHandler.handle()) {
+                            repeatMap.remove(uuid);
+                            cancel();
+                        }
+                    }
+                };
+                if (async) {
+                    bukkitRunnable.runTaskTimerAsynchronously(plugin, delay, period);
+                } else {
+                    bukkitRunnable.runTaskTimer(plugin, delay, period);
+                }
+            }
+        }
+    }
+
     public void stop(@NotNull UUID uuid) {
         repeatMap.remove(uuid);
     }
