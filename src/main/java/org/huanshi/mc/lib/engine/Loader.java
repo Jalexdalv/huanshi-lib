@@ -24,9 +24,10 @@ public class Loader {
 
     public static void load(@NotNull AbstractPlugin plugin) throws Throwable {
         for (Class<?> clazz : ReflectUtils.getJarClasses(plugin.getClass())) {
-            Class<? extends Annotation> annotationClass = ANNOTATION_MAP.get(clazz);
-            if (annotationClass != null && clazz.getAnnotation(annotationClass) != null) {
-                load(plugin, clazz, new HashSet<>(){{ add(clazz); }});
+            for (Map.Entry<Class<?>, Class<? extends Annotation>> entry : ANNOTATION_MAP.entrySet()) {
+                if (entry.getKey().isAssignableFrom(clazz) && clazz.getAnnotation(entry.getValue()) != null) {
+                    load(plugin, clazz, new HashSet<>(){{ add(clazz); }});
+                }
             }
         }
     }
@@ -42,16 +43,17 @@ public class Loader {
                     if (AbstractPlugin.class.isAssignableFrom(fieldClass)) {
                         field.set(component, plugin);
                     } else {
-                        Class<? extends Annotation> annotationClass = ANNOTATION_MAP.get(fieldClass);
-                        if (annotationClass != null && fieldClass.getAnnotation(annotationClass) != null) {
-                            for (Class<?> autowiredClass : autowiredClassSet) {
-                                if (autowiredClass.isAssignableFrom(fieldClass)) {
-                                    throw new CircularDependencyException(autowiredClassSet);
+                        for (Map.Entry<Class<?>, Class<? extends Annotation>> entry : ANNOTATION_MAP.entrySet()) {
+                            if (entry.getKey().isAssignableFrom(fieldClass) && fieldClass.getAnnotation(entry.getValue()) != null) {
+                                for (Class<?> autowiredClass : autowiredClassSet) {
+                                    if (autowiredClass.isAssignableFrom(fieldClass)) {
+                                        throw new CircularDependencyException(autowiredClassSet);
+                                    }
                                 }
+                                autowiredClassSet.add(fieldClass);
+                                field.set(component, load(plugin, fieldClass, autowiredClassSet));
+                                autowiredClassSet.remove(fieldClass);
                             }
-                            autowiredClassSet.add(fieldClass);
-                            field.set(component, load(plugin, fieldClass, autowiredClassSet));
-                            autowiredClassSet.remove(fieldClass);
                         }
                     }
                 }
