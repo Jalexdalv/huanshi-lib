@@ -1,17 +1,16 @@
 package org.huanshi.mc.lib.config;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.huanshi.mc.lib.AbstractPlugin;
-import org.huanshi.mc.lib.Component;
 import org.huanshi.mc.lib.annotation.Autowired;
+import org.huanshi.mc.lib.annotation.Config;
+import org.huanshi.mc.lib.engine.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.List;
@@ -24,9 +23,11 @@ public abstract class AbstractConfig implements Component {
     private File file;
     private YamlConfiguration configuration;
 
-    public void load(@NotNull File file, @NotNull InputStream inputStream) throws IOException {
-        this.file = file;
-        try (InputStreamReader inputStreamReader = new InputStreamReader(inputStream)) {
+    @Override
+    public void load() throws IOException {
+        Config config = getClass().getAnnotation(Config.class);
+        file = new File(plugin.getDataFolder(), config.file());
+        try (InputStreamReader inputStreamReader = new InputStreamReader(Objects.requireNonNull(plugin.getResource(config.file())))) {
             if (file.exists()) {
                 configuration = YamlConfiguration.loadConfiguration(file);
                 configuration.setDefaults(YamlConfiguration.loadConfiguration(inputStreamReader));
@@ -34,15 +35,12 @@ public abstract class AbstractConfig implements Component {
             } else {
                 configuration = YamlConfiguration.loadConfiguration(inputStreamReader);
             }
+            save();
         }
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            try {
-                save();
-            } catch (IOException ioException) {
-                throw new RuntimeException(ioException);
-            }
-        });
     }
+
+    @Override
+    public void onLoad() {}
 
     public void save() throws IOException {
         configuration.save(file);

@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.huanshi.mc.lib.Plugin;
 import org.huanshi.mc.lib.annotation.Autowired;
 import org.huanshi.mc.lib.annotation.Service;
+import org.huanshi.mc.lib.config.MainConfig;
 import org.huanshi.mc.lib.event.PlayerToggleCombatEvent;
 import org.huanshi.mc.lib.lang.Zh;
 import org.huanshi.mc.lib.timer.Timer;
@@ -20,14 +21,21 @@ import java.util.concurrent.ConcurrentHashMap;
 public class CombatService extends AbstractService {
     @Autowired
     private Plugin plugin;
-    @Autowired(file = "config.yml", path = "combat.duration")
+    @Autowired
+    private MainConfig mainConfig;
     private long duration;
     private final Map<UUID, BossBar> bossBarMap = new ConcurrentHashMap<>();
     private final Timer timer = new Timer();
 
+    @Override
+    public void onLoad() {
+        duration = mainConfig.getLong("combat.duration");
+    }
+
     public void start(@NotNull Player player) {
         UUID uuid = player.getUniqueId();
-        timer.reentry(plugin, player, true, duration, 0, 10, null, () -> {
+        timer.reentry(plugin, player, true, duration, 0, 10, null,
+            () -> {
                 Bukkit.getScheduler().runTask(plugin, () -> Bukkit.getPluginManager().callEvent(new PlayerToggleCombatEvent(player, true)));
                 bossBarMap.putIfAbsent(uuid, BossBar.bossBar(Component.empty(), 1.0F, BossBar.Color.RED, BossBar.Overlay.PROGRESS));
                 return true;

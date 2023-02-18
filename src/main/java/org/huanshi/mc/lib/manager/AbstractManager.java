@@ -1,8 +1,8 @@
-package org.huanshi.mc.lib.service;
+package org.huanshi.mc.lib.manager;
 
 import org.huanshi.mc.lib.engine.Component;
 
-public abstract class AbstractService implements Component {
+public abstract class AbstractManager implements Component {
     @Override
     public void load() {}
 

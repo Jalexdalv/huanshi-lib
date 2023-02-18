@@ -17,5 +17,5 @@ public @interface Command {
     boolean combat() default true;
     String permission() default "";
     String head();
-    String[] args() default {};
+    String [] args() default {};
 }

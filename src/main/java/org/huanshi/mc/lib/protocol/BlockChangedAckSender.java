@@ -8,16 +8,16 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.huanshi.mc.lib.Plugin;
 import org.huanshi.mc.lib.annotation.Autowired;
-import org.huanshi.mc.lib.annotation.SendHandler;
-import org.huanshi.mc.lib.annotation.Sender;
+import org.huanshi.mc.lib.annotation.Protocol;
+import org.huanshi.mc.lib.annotation.ProtocolHandler;
 import org.huanshi.mc.lib.event.PlayerBlockEvent;
 
-@Sender
-public class BlockChangedAckSender extends AbstractSender {
+@Protocol
+public class BlockChangedAckSender extends AbstractProtocol {
     @Autowired
     private Plugin plugin;
 
-    @SendHandler
+    @ProtocolHandler
     public PacketAdapter onBlockChangedAck() {
         return new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.BLOCK_CHANGED_ACK) {
             @Override

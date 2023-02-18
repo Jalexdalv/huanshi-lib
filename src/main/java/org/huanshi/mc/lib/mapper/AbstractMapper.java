@@ -2,8 +2,9 @@ package org.huanshi.mc.lib.mapper;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.huanshi.mc.lib.Component;
 import org.huanshi.mc.lib.annotation.Autowired;
+import org.huanshi.mc.lib.config.DbConfig;
+import org.huanshi.mc.lib.engine.Component;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.Connection;
@@ -11,36 +12,26 @@ import java.sql.SQLException;
 
 public abstract class AbstractMapper implements Component {
     private static HikariDataSource hikariDataSource;
-    @Autowired(file = "db.yml", path = "hikari-cp.connection-timeout")
-    private long timeout;
-    @Autowired(file = "db.yml", path = "hikari-cp.minimum-idle")
-    private int minimumIdle;
-    @Autowired(file = "db.yml", path = "hikari-cp.maximum-pool-size")
-    private int maximumPoolSize;
-    @Autowired(file = "db.yml", path = "mysql.address")
-    private String address;
-    @Autowired(file = "db.yml", path = "mysql.port")
-    private int port;
-    @Autowired(file = "db.yml", path = "mysql.database")
-    private String database;
-    @Autowired(file = "db.yml", path = "mysql.user")
-    private String user;
-    @Autowired(file = "db.yml", path = "mysql.password")
-    private String password;
+    @Autowired
+    private DbConfig dbConfig;
 
+    @Override
     public void load() {
         if (hikariDataSource == null) {
             HikariConfig hikariConfig = new HikariConfig();
-            hikariConfig.setConnectionTimeout(timeout);
-            hikariConfig.setMinimumIdle(minimumIdle);
-            hikariConfig.setMaximumPoolSize(maximumPoolSize);
-            hikariConfig.setJdbcUrl("jdbc:mysql://" + address + ":" + port + "/" + database + "?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai");
-            hikariConfig.setUsername(user);
-            hikariConfig.setPassword(password);
+            hikariConfig.setConnectionTimeout(dbConfig.getLong("hikari-cp.connection-timeout"));
+            hikariConfig.setMinimumIdle(dbConfig.getInt("hikari-cp.minimum-idle"));
+            hikariConfig.setMaximumPoolSize(dbConfig.getInt("hikari-cp.maximum-pool-size"));
+            hikariConfig.setJdbcUrl("jdbc:mysql://" + dbConfig.getString("mysql.address") + ":" + dbConfig.getInt("mysql.port") + "/" + dbConfig.getString("mysql.database") + "?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai");
+            hikariConfig.setUsername(dbConfig.getString("mysql.user"));
+            hikariConfig.setPassword(dbConfig.getString("mysql.password"));
             hikariConfig.setAutoCommit(true);
             hikariDataSource = new HikariDataSource(hikariConfig);
         }
     }
+
+    @Override
+    public void onLoad() {}
 
     protected @NotNull Connection getMySQLConnection() throws SQLException {
         return hikariDataSource.getConnection();
