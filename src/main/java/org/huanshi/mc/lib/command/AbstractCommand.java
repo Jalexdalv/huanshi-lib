@@ -126,7 +126,7 @@ public abstract class AbstractCommand implements Component, Registrable, TabExec
     }
 
     protected boolean hasPermission(@NotNull Player player) {
-        return player.isOp() || (!isOp() && (permission == null || player.hasPermission(permission)));
+        return player.isOp() || (!op && (permission == null || player.hasPermission(permission)));
     }
 
     public @NotNull Environment getEnvironment() {

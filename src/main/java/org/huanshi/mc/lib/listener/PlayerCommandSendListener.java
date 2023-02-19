@@ -7,6 +7,8 @@ import org.huanshi.mc.lib.annotation.Listener;
 import org.huanshi.mc.lib.manager.CommandManager;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
+
 @Listener
 public class PlayerCommandSendListener extends AbstractListener {
     @Autowired
@@ -14,11 +16,11 @@ public class PlayerCommandSendListener extends AbstractListener {
 
     @EventHandler
     public void onPlayerCommandSend(@NotNull PlayerCommandSendEvent playerCommandSendEvent) {
-//        Collection<String> collection = playerCommandSendEvent.getCommands();
-//        collection.clear();
-//        collection.addAll(cmdManager.getCommands());
-//        if (playerCommandSendEvent.getPlayer().isOp()) {
-//            collection.addAll(cmdManager.getOpCommands());
-//        }
+        Collection<String> collection = playerCommandSendEvent.getCommands();
+        collection.clear();
+        collection.addAll(commandManager.getCommands());
+        if (playerCommandSendEvent.getPlayer().isOp()) {
+            collection.addAll(commandManager.getOpCommands());
+        }
     }
 }
