@@ -27,12 +27,12 @@ public class CombatService extends AbstractService {
     private final Timer timer = new Timer();
 
     @Override
-    public final void load() {
+    public final void onLoad() {
         duration = mainConfig.getLong("combat.duration");
     }
 
-    public final void start(@NotNull final Player player) {
-        final UUID uuid = player.getUniqueId();
+    public void start(@NotNull Player player) {
+        UUID uuid = player.getUniqueId();
         timer.reentry(plugin, player, true, duration, 0L, 500L, null,
             () -> {
                 Bukkit.getScheduler().runTask(plugin, () -> Bukkit.getPluginManager().callEvent(new PlayerToggleCombatEvent(player, true)));
@@ -49,19 +49,19 @@ public class CombatService extends AbstractService {
         );
     }
 
-    public final void stop(@NotNull final UUID uuid) {
+    public void stop(@NotNull UUID uuid) {
         timer.stop(uuid);
     }
 
-    public final void stop(@NotNull final Player player) {
+    public void stop(@NotNull Player player) {
         timer.stop(player);
     }
 
-    public final boolean isRunning(@NotNull final UUID uuid) {
+    public boolean isRunning(@NotNull UUID uuid) {
         return timer.isRunning(uuid);
     }
 
-    public final boolean isRunning(@NotNull final Player player) {
+    public boolean isRunning(@NotNull Player player) {
         return timer.isRunning(player);
     }
 }

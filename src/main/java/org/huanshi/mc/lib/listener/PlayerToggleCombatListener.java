@@ -14,9 +14,9 @@ public class PlayerToggleCombatListener extends AbstractListener {
     private final Set<UUID> flySet = new HashSet<>();
 
     @EventHandler
-    public final void onPlayerToggleCombat(@NotNull final PlayerToggleCombatEvent playerToggleCombatEvent) {
-        final Player player = playerToggleCombatEvent.getPlayer();
-        final UUID uuid = player.getUniqueId();
+    public void onPlayerToggleCombat(@NotNull PlayerToggleCombatEvent playerToggleCombatEvent) {
+        Player player = playerToggleCombatEvent.getPlayer();
+        UUID uuid = player.getUniqueId();
         if (playerToggleCombatEvent.isCombating()) {
             if (player.getAllowFlight()) {
                 player.setAllowFlight(false);

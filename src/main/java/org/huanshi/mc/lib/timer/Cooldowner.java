@@ -14,9 +14,9 @@ import java.util.UUID;
 public class Cooldowner {
     private final Map<UUID, Long> timeMap = new HashMap<>();
 
-    public final void start(@NotNull final Entity entity, final long duration, @Nullable final CooldownerStartHandler cooldownerStartHandler, @Nullable final CooldownerRunHandler cooldownerRunHandler) {
-        final UUID uuid = entity.getUniqueId();
-        final long durationLeft = getDurationLeft(uuid);
+    public void start(@NotNull Entity entity, long duration, @Nullable CooldownerStartHandler cooldownerStartHandler, @Nullable CooldownerRunHandler cooldownerRunHandler) {
+        UUID uuid = entity.getUniqueId();
+        long durationLeft = getDurationLeft(uuid);
         if (durationLeft > 0) {
             if (cooldownerRunHandler == null || cooldownerRunHandler.handle(durationLeft)) {
                 entity.sendActionBar(Zh.cd(durationLeft));
@@ -26,8 +26,8 @@ public class Cooldowner {
         }
     }
 
-    public final void reentry(@NotNull final Entity entity, final long duration, @Nullable final CooldownerReentryHandler cooldownerReentryHandler, @Nullable final CooldownerStartHandler cooldownerStartHandler) {
-        final UUID uuid = entity.getUniqueId();
+    public void reentry(@NotNull Entity entity, long duration, @Nullable CooldownerReentryHandler cooldownerReentryHandler, @Nullable CooldownerStartHandler cooldownerStartHandler) {
+        UUID uuid = entity.getUniqueId();
         if (isRunning(uuid)) {
             if (cooldownerReentryHandler == null || cooldownerReentryHandler.handle()) {
                 timeMap.merge(uuid, System.currentTimeMillis() + duration, Long::max);
@@ -37,17 +37,17 @@ public class Cooldowner {
         }
     }
 
-    public final void stop(@NotNull final UUID uuid) {
+    public void stop(@NotNull UUID uuid) {
         timeMap.remove(uuid);
     }
 
-    public final void stop(@NotNull final Entity entity) {
+    public void stop(@NotNull Entity entity) {
         stop(entity.getUniqueId());
     }
 
-    public final @NotNull Set<UUID> getRunnings() {
-        final Set<UUID> runningSet = new HashSet<>();
-        for (final Map.Entry<UUID, Long> entry : timeMap.entrySet()) {
+    public @NotNull Set<UUID> getRunnings() {
+        Set<UUID> runningSet = new HashSet<>();
+        for (Map.Entry<UUID, Long> entry : timeMap.entrySet()) {
             if (entry.getValue() - System.currentTimeMillis() > 0) {
                 runningSet.add(entry.getKey());
             }
@@ -55,21 +55,21 @@ public class Cooldowner {
         return runningSet;
     }
 
-    public final long getDurationLeft(@NotNull final UUID uuid) {
+    public long getDurationLeft(@NotNull UUID uuid) {
         Long time = timeMap.get(uuid);
         return time == null ? 0L : Math.max(time - System.currentTimeMillis(), 0);
     }
 
-    public final long getDurationLeft(@NotNull final Entity entity) {
+    public long getDurationLeft(@NotNull Entity entity) {
         return getDurationLeft(entity.getUniqueId());
     }
 
-    public final boolean isRunning(@NotNull final UUID uuid) {
-        final Long time = timeMap.get(uuid);
+    public boolean isRunning(@NotNull UUID uuid) {
+        Long time = timeMap.get(uuid);
         return time != null && time - System.currentTimeMillis() > 0;
     }
 
-    public final boolean isRunning(@NotNull final Entity entity) {
+    public boolean isRunning(@NotNull Entity entity) {
         return isRunning(entity.getUniqueId());
     }
 }

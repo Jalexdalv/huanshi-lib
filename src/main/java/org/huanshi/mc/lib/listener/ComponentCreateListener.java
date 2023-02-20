@@ -5,20 +5,20 @@ import org.huanshi.mc.framework.annotation.Autowired;
 import org.huanshi.mc.framework.command.AbstractPlayerCommand;
 import org.huanshi.mc.framework.event.ComponentCreateEvent;
 import org.huanshi.mc.framework.listener.AbstractListener;
-import org.huanshi.mc.lib.service.CommandService;
+import org.huanshi.mc.lib.service.CommandHeadService;
 import org.jetbrains.annotations.NotNull;
 
 public class ComponentCreateListener extends AbstractListener {
     @Autowired
-    private CommandService commandService;
+    private CommandHeadService commandHeadService;
 
     @EventHandler
-    public final void onComponentCreate(@NotNull final ComponentCreateEvent componentCreateEvent) {
-        if (componentCreateEvent.getComponent() instanceof final AbstractPlayerCommand playerCommand) {
+    public void onComponentCreate(@NotNull ComponentCreateEvent componentCreateEvent) {
+        if (componentCreateEvent.getComponent() instanceof AbstractPlayerCommand playerCommand) {
             if (playerCommand.isOp()) {
-                commandService.addCommandHead(playerCommand.getHead());
+                commandHeadService.addCommandHead(playerCommand.getHead());
             } else {
-                commandService.addOpCommandHead(playerCommand.getHead());
+                commandHeadService.addOpCommandHead(playerCommand.getHead());
             }
         }
     }

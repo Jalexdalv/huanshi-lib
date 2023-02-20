@@ -6,26 +6,26 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashSet;
 import java.util.Set;
 
-public class CommandService extends AbstractService {
+public class CommandHeadService extends AbstractService {
     private final Set<String> commandHeadSet = new HashSet<>(), opCommandHeadSet = new HashSet<>();
 
-    public final void addCommandHead(@NotNull final String head) {
+    public void addCommandHead(@NotNull String head) {
         commandHeadSet.add(head);
     }
 
-    public final void addOpCommandHead(@NotNull final String head) {
+    public void addOpCommandHead(@NotNull String head) {
         opCommandHeadSet.add(head);
     }
 
-    public final boolean isCommandHead(@NotNull final String head) {
+    public boolean isCommandHead(@NotNull String head) {
         return commandHeadSet.contains(head) || opCommandHeadSet.contains(head);
     }
 
-    public final @NotNull Set<String> getCommandHeads() {
+    public @NotNull Set<String> getCommandHeads() {
         return commandHeadSet;
     }
 
-    public final @NotNull Set<String> getOpCommandHeads() {
+    public @NotNull Set<String> getOpCommandHeads() {
         return opCommandHeadSet;
     }
 }

@@ -13,11 +13,11 @@ public class EntityDamageByEntityListener extends AbstractListener {
     private CombatService combatService;
 
     @EventHandler
-    public final void onEntityDamageByEntity(@NotNull final EntityDamageByEntityEvent entityDamageByEntityEvent) {
-        if (entityDamageByEntityEvent.getEntity() instanceof final Player player) {
+    public void onEntityDamageByEntity(@NotNull EntityDamageByEntityEvent entityDamageByEntityEvent) {
+        if (entityDamageByEntityEvent.getEntity() instanceof Player player) {
             combatService.start(player);
         }
-        if (entityDamageByEntityEvent.getDamager() instanceof final Player player) {
+        if (entityDamageByEntityEvent.getDamager() instanceof Player player) {
             combatService.start(player);
         }
     }

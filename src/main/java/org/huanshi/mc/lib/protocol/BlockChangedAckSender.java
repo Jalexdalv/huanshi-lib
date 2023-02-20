@@ -18,11 +18,11 @@ public class BlockChangedAckSender extends AbstractProtocol {
     private Plugin plugin;
 
     @ProtocolHandler
-    public final @NotNull PacketAdapter onBlockChangedAck() {
+    public @NotNull PacketAdapter onBlockChangedAck() {
         return new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.BLOCK_CHANGED_ACK) {
             @Override
-            public void onPacketSending(final PacketEvent packetEvent) {
-                final Player player = packetEvent.getPlayer();
+            public void onPacketSending(PacketEvent packetEvent) {
+                Player player = packetEvent.getPlayer();
                 if (player.isHandRaised()) {
                     Bukkit.getPluginManager().callEvent(new PlayerBlockEvent(player));
                 }

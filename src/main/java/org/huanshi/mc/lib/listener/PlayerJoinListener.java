@@ -14,7 +14,7 @@ public class PlayerJoinListener extends AbstractListener {
     private Plugin plugin;
 
     @EventHandler
-    public final void onPlayerJoin(@NotNull final PlayerJoinEvent playerJoinEvent) {
+    public void onPlayerJoin(@NotNull PlayerJoinEvent playerJoinEvent) {
         Bukkit.getScheduler().runTaskLater(plugin, () -> playerJoinEvent.getPlayer().setFlyingFallDamage(TriState.FALSE), 5L);
     }
 }

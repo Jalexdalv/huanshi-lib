@@ -16,8 +16,8 @@ public class PlayerDeathListener extends AbstractListener {
     private ClientCommandSender clientCommandSender;
 
     @EventHandler
-    public final void onPlayerDeath(@NotNull final PlayerDeathEvent playerDeathEvent) {
-        final Player player = playerDeathEvent.getPlayer();
+    public void onPlayerDeath(@NotNull PlayerDeathEvent playerDeathEvent) {
+        Player player = playerDeathEvent.getPlayer();
         combatService.start(player);
         clientCommandSender.autoRespawn(player);
     }

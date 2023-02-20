@@ -3,7 +3,7 @@ package org.huanshi.mc.lib.timer;
 import org.bukkit.entity.Entity;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.huanshi.mc.framework.AbstractPlugin;
-import org.huanshi.mc.lib.utils.FormatUtils;
+import org.huanshi.mc.framework.utils.FormatUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,15 +16,15 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Timer {
     private final Map<UUID, Long> durationMap = new ConcurrentHashMap<>();
 
-    public final void start(@NotNull final AbstractPlugin plugin, @NotNull final Entity entity, final boolean async, final long duration, final long delay, final long period, @Nullable final TimerStartHandler timerStartHandler, @Nullable final TimerRunHandler timerRunHandler, @Nullable final TimerStopHandler timerStopHandler) {
-        final UUID uuid = entity.getUniqueId();
+    public void start(@NotNull AbstractPlugin plugin, @NotNull Entity entity, boolean async, long duration, long delay, long period, @Nullable TimerStartHandler timerStartHandler, @Nullable TimerRunHandler timerRunHandler, @Nullable TimerStopHandler timerStopHandler) {
+        UUID uuid = entity.getUniqueId();
         if (!isRunning(uuid)) {
             if (timerStartHandler == null || timerStartHandler.handle()) {
                 durationMap.put(uuid, duration);
-                final BukkitRunnable bukkitRunnable = new BukkitRunnable() {
+                BukkitRunnable bukkitRunnable = new BukkitRunnable() {
                     @Override
                     public void run() {
-                        final long durationLeft = getDurationLeft(uuid);
+                        long durationLeft = getDurationLeft(uuid);
                         if (durationLeft > 0) {
                             if (timerRunHandler == null || timerRunHandler.handle(durationLeft)) {
                                 durationMap.put(uuid, Math.max(durationLeft - 50L * period, 0L));
@@ -45,8 +45,8 @@ public class Timer {
         }
     }
 
-    public final void reentry(@NotNull final AbstractPlugin plugin, @NotNull final Entity entity, final boolean async, final long duration, final long delay, final long period, @Nullable final TimerReentryHandler timerReentryHandler, @Nullable final TimerStartHandler timerStartHandler, @Nullable final TimerRunHandler timerRunHandler, @Nullable final TimerStopHandler timerStopHandler) {
-        final UUID uuid = entity.getUniqueId();
+    public void reentry(@NotNull AbstractPlugin plugin, @NotNull Entity entity, boolean async, long duration, long delay, long period, @Nullable TimerReentryHandler timerReentryHandler, @Nullable TimerStartHandler timerStartHandler, @Nullable TimerRunHandler timerRunHandler, @Nullable TimerStopHandler timerStopHandler) {
+        UUID uuid = entity.getUniqueId();
         if (isRunning(uuid)) {
             if (timerReentryHandler == null || timerReentryHandler.handle()) {
                 durationMap.merge(uuid, duration, Long::max);
@@ -54,10 +54,10 @@ public class Timer {
         } else {
             if (timerStartHandler == null || timerStartHandler.handle()) {
                 durationMap.put(uuid, duration);
-                final BukkitRunnable bukkitRunnable = new BukkitRunnable() {
+                BukkitRunnable bukkitRunnable = new BukkitRunnable() {
                     @Override
                     public void run() {
-                        final long durationLeft = getDurationLeft(uuid);
+                        long durationLeft = getDurationLeft(uuid);
                         if (durationLeft > 0) {
                             if (timerRunHandler == null || timerRunHandler.handle(durationLeft)) {
                                 durationMap.put(uuid, Math.max(durationLeft - period, 0L));
@@ -78,17 +78,17 @@ public class Timer {
         }
     }
 
-    public final void stop(@NotNull final UUID uuid) {
+    public void stop(@NotNull UUID uuid) {
         durationMap.remove(uuid);
     }
 
-    public final void stop(@NotNull final Entity entity) {
+    public void stop(@NotNull Entity entity) {
         stop(entity.getUniqueId());
     }
 
-    public final @NotNull Set<UUID> getRunnings() {
-        final Set<UUID> runningSet = new HashSet<>();
-        for (final Map.Entry<UUID, Long> entry : durationMap.entrySet()) {
+    public @NotNull Set<UUID> getRunnings() {
+        Set<UUID> runningSet = new HashSet<>();
+        for (Map.Entry<UUID, Long> entry : durationMap.entrySet()) {
             if (entry.getValue() > 0) {
                 runningSet.add(entry.getKey());
             }
@@ -96,20 +96,20 @@ public class Timer {
         return runningSet;
     }
 
-    public final long getDurationLeft(@NotNull final UUID uuid) {
+    public long getDurationLeft(@NotNull UUID uuid) {
         return durationMap.getOrDefault(uuid, 0L);
     }
 
-    public final long getDurationLeft(@NotNull final Entity entity) {
+    public long getDurationLeft(@NotNull Entity entity) {
         return getDurationLeft(entity.getUniqueId());
     }
 
-    public final boolean isRunning(@NotNull final UUID uuid) {
-        final Long duration = durationMap.get(uuid);
+    public boolean isRunning(@NotNull UUID uuid) {
+        Long duration = durationMap.get(uuid);
         return duration != null && duration > 0;
     }
 
-    public final boolean isRunning(@NotNull final Entity entity) {
+    public boolean isRunning(@NotNull Entity entity) {
         return isRunning(entity.getUniqueId());
     }
 }
