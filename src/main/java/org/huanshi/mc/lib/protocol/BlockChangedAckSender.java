@@ -6,23 +6,23 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.huanshi.mc.framework.annotation.Autowired;
+import org.huanshi.mc.framework.annotation.ProtocolHandler;
+import org.huanshi.mc.framework.protocol.AbstractProtocol;
 import org.huanshi.mc.lib.Plugin;
-import org.huanshi.mc.lib.annotation.Autowired;
-import org.huanshi.mc.lib.annotation.Protocol;
-import org.huanshi.mc.lib.annotation.ProtocolHandler;
 import org.huanshi.mc.lib.event.PlayerBlockEvent;
+import org.jetbrains.annotations.NotNull;
 
-@Protocol
 public class BlockChangedAckSender extends AbstractProtocol {
     @Autowired
     private Plugin plugin;
 
     @ProtocolHandler
-    public PacketAdapter onBlockChangedAck() {
+    public final @NotNull PacketAdapter onBlockChangedAck() {
         return new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.BLOCK_CHANGED_ACK) {
             @Override
-            public void onPacketSending(PacketEvent packetEvent) {
-                Player player = packetEvent.getPlayer();
+            public void onPacketSending(final PacketEvent packetEvent) {
+                final Player player = packetEvent.getPlayer();
                 if (player.isHandRaised()) {
                     Bukkit.getPluginManager().callEvent(new PlayerBlockEvent(player));
                 }

@@ -27,41 +27,41 @@ public class ItemUtils {
         add(Material.NETHERITE_AXE);
     }};
 
-    public static boolean isSword(@NotNull ItemStack itemStack) {
+    public static boolean isSword(@NotNull final ItemStack itemStack) {
         return SWORD_SET.contains(itemStack.getType());
     }
 
-    public static boolean isAxe(@NotNull ItemStack itemStack) {
+    public static boolean isAxe(@NotNull final ItemStack itemStack) {
         return AXE_SET.contains(itemStack.getType());
     }
 
-    public static boolean isShieldInOffHand(@NotNull Player player) {
-        PlayerInventory playerInventory = player.getInventory();
+    public static boolean isShieldInOffHand(@NotNull final Player player) {
+        final PlayerInventory playerInventory = player.getInventory();
         return playerInventory.getItemInMainHand().getType() != Material.SHIELD && playerInventory.getItemInOffHand().getType() == Material.SHIELD;
     }
 
-    public static boolean isSingleSwordInMainHand(@NotNull Player player) {
-        PlayerInventory playerInventory = player.getInventory();
+    public static boolean isSingleSwordInMainHand(@NotNull final Player player) {
+        final PlayerInventory playerInventory = player.getInventory();
         return isSword(playerInventory.getItemInMainHand()) && !isSword(playerInventory.getItemInOffHand());
     }
 
-    public static boolean isSingleSwordInOffHand(@NotNull Player player) {
-        PlayerInventory playerInventory = player.getInventory();
+    public static boolean isSingleSwordInOffHand(@NotNull final Player player) {
+        final PlayerInventory playerInventory = player.getInventory();
         return !isSword(playerInventory.getItemInMainHand()) && isSword(playerInventory.getItemInOffHand());
     }
 
-    public static boolean isDoubleSwordInHand(@NotNull Player player) {
-        PlayerInventory playerInventory = player.getInventory();
+    public static boolean isDoubleSwordInHand(@NotNull final Player player) {
+        final PlayerInventory playerInventory = player.getInventory();
         return isSword(playerInventory.getItemInMainHand()) && isSword(playerInventory.getItemInOffHand());
     }
 
-    public static boolean isSingleAxeInMainHand(@NotNull Player player) {
-        PlayerInventory playerInventory = player.getInventory();
+    public static boolean isSingleAxeInMainHand(@NotNull final Player player) {
+        final PlayerInventory playerInventory = player.getInventory();
         return isAxe(playerInventory.getItemInMainHand()) && !isAxe(playerInventory.getItemInOffHand());
     }
 
-    public static boolean isDoubleAxeInHand(@NotNull Player player) {
-        PlayerInventory playerInventory = player.getInventory();
+    public static boolean isDoubleAxeInHand(@NotNull final Player player) {
+        final PlayerInventory playerInventory = player.getInventory();
         return isAxe(playerInventory.getItemInMainHand()) && isAxe(playerInventory.getItemInOffHand());
     }
 }

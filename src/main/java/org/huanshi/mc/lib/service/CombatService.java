@@ -4,9 +4,9 @@ import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.huanshi.mc.framework.annotation.Autowired;
+import org.huanshi.mc.framework.service.AbstractService;
 import org.huanshi.mc.lib.Plugin;
-import org.huanshi.mc.lib.annotation.Autowired;
-import org.huanshi.mc.lib.annotation.Service;
 import org.huanshi.mc.lib.config.MainConfig;
 import org.huanshi.mc.lib.event.PlayerToggleCombatEvent;
 import org.huanshi.mc.lib.lang.Zh;
@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Service
 public class CombatService extends AbstractService {
     @Autowired
     private Plugin plugin;
@@ -28,13 +27,13 @@ public class CombatService extends AbstractService {
     private final Timer timer = new Timer();
 
     @Override
-    public void onLoad() {
+    public final void load() {
         duration = mainConfig.getLong("combat.duration");
     }
 
-    public void start(@NotNull Player player) {
-        UUID uuid = player.getUniqueId();
-        timer.reentry(plugin, player, true, duration, 0, 10, null,
+    public final void start(@NotNull final Player player) {
+        final UUID uuid = player.getUniqueId();
+        timer.reentry(plugin, player, true, duration, 0L, 500L, null,
             () -> {
                 Bukkit.getScheduler().runTask(plugin, () -> Bukkit.getPluginManager().callEvent(new PlayerToggleCombatEvent(player, true)));
                 bossBarMap.putIfAbsent(uuid, BossBar.bossBar(Component.empty(), 1.0F, BossBar.Color.RED, BossBar.Overlay.PROGRESS));
@@ -50,19 +49,19 @@ public class CombatService extends AbstractService {
         );
     }
 
-    public void stop(@NotNull UUID uuid) {
+    public final void stop(@NotNull final UUID uuid) {
         timer.stop(uuid);
     }
 
-    public void stop(@NotNull Player player) {
+    public final void stop(@NotNull final Player player) {
         timer.stop(player);
     }
 
-    public boolean isRunning(@NotNull UUID uuid) {
+    public final boolean isRunning(@NotNull final UUID uuid) {
         return timer.isRunning(uuid);
     }
 
-    public boolean isRunning(@NotNull Player player) {
+    public final boolean isRunning(@NotNull final Player player) {
         return timer.isRunning(player);
     }
 }

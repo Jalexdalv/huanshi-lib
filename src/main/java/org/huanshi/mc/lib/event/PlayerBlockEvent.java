@@ -9,7 +9,7 @@ public class PlayerBlockEvent extends Event {
     private static final HandlerList HANDLER_LIST = new HandlerList();
     private final Player player;
 
-    public PlayerBlockEvent(@NotNull Player player) {
+    public PlayerBlockEvent(@NotNull final Player player) {
         this.player = player;
     }
 
@@ -18,11 +18,11 @@ public class PlayerBlockEvent extends Event {
     }
 
     @Override
-    public @NotNull HandlerList getHandlers() {
+    public final @NotNull HandlerList getHandlers() {
         return HANDLER_LIST;
     }
 
-    public @NotNull Player getPlayer() {
+    public final @NotNull Player getPlayer() {
         return player;
     }
 }

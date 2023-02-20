@@ -10,7 +10,7 @@ public class PlayerToggleCombatEvent extends Event {
     private final Player player;
     private final boolean combat;
 
-    public PlayerToggleCombatEvent(@NotNull Player player, boolean combat) {
+    public PlayerToggleCombatEvent(@NotNull final Player player, final boolean combat) {
         this.player = player;
         this.combat = combat;
     }
@@ -20,15 +20,15 @@ public class PlayerToggleCombatEvent extends Event {
     }
 
     @Override
-    public @NotNull HandlerList getHandlers() {
+    public final @NotNull HandlerList getHandlers() {
         return HANDLER_LIST;
     }
 
-    public @NotNull Player getPlayer() {
+    public final @NotNull Player getPlayer() {
         return player;
     }
 
-    public boolean isCombating() {
+    public final boolean isCombating() {
         return combat;
     }
 }
