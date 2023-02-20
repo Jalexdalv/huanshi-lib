@@ -4,5 +4,5 @@ import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 
 public interface AimHandler<T extends LivingEntity> {
-    void handle(@NotNull final T t);
+    void handle(@NotNull T t);
 }

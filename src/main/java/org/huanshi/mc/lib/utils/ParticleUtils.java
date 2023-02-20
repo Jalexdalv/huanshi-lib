@@ -13,44 +13,44 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 
 public class ParticleUtils {
-    public static <T> void play(@NotNull final Location location, @NotNull final Particle particle, final int count, final double offsetX, final double offsetY, final double offsetZ, final double speed, @Nullable final T data) {
-        final double correctRadians = Math.toRadians(location.getYaw()), correctSin = Math.sin(correctRadians), correctCos = Math.cos(correctRadians);
-        final double correctOffsetX = - offsetX * correctCos - offsetZ * correctSin, correctOffsetZ = offsetZ * correctCos - offsetX * correctSin;
+    public static <T> void playParticle(@NotNull Location location, @NotNull Particle particle, int count, double offsetX, double offsetY, double offsetZ, double speed, @Nullable T data) {
+        double correctRadians = Math.toRadians(location.getYaw()), correctSin = Math.sin(correctRadians), correctCos = Math.cos(correctRadians);
+        double correctOffsetX = - offsetX * correctCos - offsetZ * correctSin, correctOffsetZ = offsetZ * correctCos - offsetX * correctSin;
         TargetUtils.aimPlayers(location, 20.0D, 10.0D, 20.0D, -20.0D, -10.0D, -20.0D, null, player -> player.spawnParticle(particle, location, count, correctOffsetX, offsetY, correctOffsetZ, speed, data));
     }
 
-    public static <T> void play2D(@NotNull final Location location, @NotNull final Particle particle, @NotNull final Coordinate coordinate, final int count, final double offsetX, final double offsetY, final double offsetZ, final double speed, @Nullable final T data, final double startAngle, final double endAngle, final double radius, final int repeat) {
-        final Collection<Entity> entityCollection = TargetUtils.getPlayers(location, 20.0D, 10.0D, 20.0D, -20.0D, -10.0D, -20.0D, null);
-        final double correctRadians = Math.toRadians(location.getYaw()), correctSin = Math.sin(correctRadians), correctCos = Math.cos(correctRadians);
-        final double correctOffsetX = - offsetX * correctCos - offsetZ * correctSin, correctOffsetZ = offsetZ * correctCos - offsetX * correctSin;
-        final double stepAngle = (endAngle - startAngle) / (double) repeat;
+    public static <T> void play2DParticle(@NotNull Location location, @NotNull Particle particle, @NotNull Coordinate coordinate, int count, double offsetX, double offsetY, double offsetZ, double speed, @Nullable T data, double startAngle, double endAngle, double radius, int repeat) {
+        Collection<Entity> entityCollection = TargetUtils.getPlayers(location, 20.0D, 10.0D, 20.0D, -20.0D, -10.0D, -20.0D, null);
+        double correctRadians = Math.toRadians(location.getYaw()), correctSin = Math.sin(correctRadians), correctCos = Math.cos(correctRadians);
+        double correctOffsetX = - offsetX * correctCos - offsetZ * correctSin, correctOffsetZ = offsetZ * correctCos - offsetX * correctSin;
+        double stepAngle = (endAngle - startAngle) / (double) repeat;
         switch (coordinate) {
             case XY -> {
                 for (double angle = startAngle; angle < endAngle; angle = angle + stepAngle) {
-                    final double radians = Math.toRadians(angle), x = radius * Math.sin(radians), y = radius * Math.sin(radians);
-                    final double correctX = - x * correctCos, correctZ = - x * correctSin;
+                    double radians = Math.toRadians(angle), x = radius * Math.sin(radians), y = radius * Math.sin(radians);
+                    double correctX = - x * correctCos, correctZ = - x * correctSin;
                     location.add(correctX, y, correctZ);
-                    for (final Entity entity : entityCollection) {
+                    for (Entity entity : entityCollection) {
                         ((Player) entity).spawnParticle(particle, location, count, correctOffsetX, offsetY, correctOffsetZ, speed, data);
                     }
                     location.subtract(correctX, y, correctZ);
                 }
             } case YZ -> {
                 for (double angle = startAngle; angle < endAngle; angle = angle + stepAngle) {
-                    final double radians = Math.toRadians(angle), z = radius * Math.cos(radians), y = radius * Math.sin(radians);
-                    final double correctX = - z * correctSin, correctZ = z * correctCos;
+                    double radians = Math.toRadians(angle), z = radius * Math.cos(radians), y = radius * Math.sin(radians);
+                    double correctX = - z * correctSin, correctZ = z * correctCos;
                     location.add(correctX, y, correctZ);
-                    for (final Entity entity : entityCollection) {
+                    for (Entity entity : entityCollection) {
                         ((Player) entity).spawnParticle(particle, location, count, correctOffsetX, offsetY, correctOffsetZ, speed, data);
                     }
                     location.subtract(correctX, y, correctZ);
                 }
             } case XZ -> {
                 for (double angle = startAngle; angle < endAngle; angle = angle + stepAngle) {
-                    final double radians = Math.toRadians(angle), x = radius * Math.sin(radians), z = radius * Math.cos(radians);
-                    final double correctX = - x * correctCos - z * correctSin, correctZ = z * correctCos - x * correctSin;
+                    double radians = Math.toRadians(angle), x = radius * Math.sin(radians), z = radius * Math.cos(radians);
+                    double correctX = - x * correctCos - z * correctSin, correctZ = z * correctCos - x * correctSin;
                     location.add(correctX, 0, correctZ);
-                    for (final Entity entity : entityCollection) {
+                    for (Entity entity : entityCollection) {
                         ((Player) entity).spawnParticle(particle, location, count, correctOffsetX, offsetY, correctOffsetZ, speed, data);
                     }
                     location.subtract(correctX, 0, correctZ);
@@ -59,54 +59,54 @@ public class ParticleUtils {
         }
     }
 
-    public static <T> void play3D(@NotNull final Location location, @NotNull final Particle particle, final boolean mirror, final int count, final double offsetX, final double offsetY, final double offsetZ, final double speed, @Nullable final T data, final double startAngle, final double endAngle, double radius, final int repeat) {
-        final Collection<Entity> entityCollection = TargetUtils.getPlayers(location, 20.0D, 10.0D, 20.0D, -20.0D, -10.0D, -20.0D, null);
-        final double correctRadians = Math.toRadians(location.getYaw()), correctSin = Math.sin(correctRadians), correctCos = Math.cos(correctRadians);
-        final double correctOffsetX = - offsetX * correctCos - offsetZ * correctSin, correctOffsetZ = offsetZ * correctCos - offsetX * correctSin;
-        final double stepAngle = (endAngle - startAngle) / (double) repeat;
+    public static <T> void play3DParticle(@NotNull Location location, @NotNull Particle particle, boolean mirror, int count, double offsetX, double offsetY, double offsetZ, double speed, @Nullable T data, double startAngle, double endAngle, double radius, int repeat) {
+        Collection<Entity> entityCollection = TargetUtils.getPlayers(location, 20.0D, 10.0D, 20.0D, -20.0D, -10.0D, -20.0D, null);
+        double correctRadians = Math.toRadians(location.getYaw()), correctSin = Math.sin(correctRadians), correctCos = Math.cos(correctRadians);
+        double correctOffsetX = - offsetX * correctCos - offsetZ * correctSin, correctOffsetZ = offsetZ * correctCos - offsetX * correctSin;
+        double stepAngle = (endAngle - startAngle) / (double) repeat;
         for (double angle = startAngle; angle < endAngle; angle = angle + stepAngle) {
-            final double radians = Math.toRadians(angle), x = radius * Math.sin(radians), z = radius * Math.cos(radians), y = Math.sin(radians);
-            final double correctX = mirror ? x * correctCos + z * correctSin : - x * correctCos - z * correctSin, correctZ = mirror ? x * correctSin - z * correctCos : z * correctCos - x * correctSin;
+            double radians = Math.toRadians(angle), x = radius * Math.sin(radians), z = radius * Math.cos(radians), y = Math.sin(radians);
+            double correctX = mirror ? x * correctCos + z * correctSin : - x * correctCos - z * correctSin, correctZ = mirror ? x * correctSin - z * correctCos : z * correctCos - x * correctSin;
             location.add(correctX, y, correctZ);
-            for (final Entity entity : entityCollection) {
+            for (Entity entity : entityCollection) {
                 ((Player) entity).spawnParticle(particle, location, count, correctOffsetX, offsetY, correctOffsetZ, speed, data);
             }
             location.subtract(correctX, 0, correctZ);
         }
     }
 
-    public static <T> void play2DAnimation(@NotNull final AbstractPlugin plugin, @NotNull final Location location, @NotNull final Particle particle, @NotNull final Coordinate coordinate, final int count, final double offsetX, final double offsetY, final double offsetZ, final double speed, @Nullable final T data, final double startAngle, final double endAngle, final double radius, final int repeat, final long period) {
-        final Collection<Entity> entityCollection = TargetUtils.getPlayers(location, 20.0D, 10.0D, 20.0D, -20.0D, -10.0D, -20.0D, null);
-        final double correctRadians = Math.toRadians(location.getYaw()), correctSin = Math.sin(correctRadians), correctCos = Math.cos(correctRadians);
-        final double correctOffsetX = - offsetX * correctCos - offsetZ * correctSin, correctOffsetZ = offsetZ * correctCos - offsetX * correctSin;
-        final double stepAngle = (endAngle - startAngle) / (double) repeat;
-        final AtomicDouble atomicDouble = new AtomicDouble(startAngle);
+    public static <T> void play2DParticleAnimation(@NotNull AbstractPlugin plugin, @NotNull Location location, @NotNull Particle particle, @NotNull Coordinate coordinate, int count, double offsetX, double offsetY, double offsetZ, double speed, @Nullable T data, double startAngle, double endAngle, double radius, int repeat, long period) {
+        Collection<Entity> entityCollection = TargetUtils.getPlayers(location, 20.0D, 10.0D, 20.0D, -20.0D, -10.0D, -20.0D, null);
+        double correctRadians = Math.toRadians(location.getYaw()), correctSin = Math.sin(correctRadians), correctCos = Math.cos(correctRadians);
+        double correctOffsetX = - offsetX * correctCos - offsetZ * correctSin, correctOffsetZ = offsetZ * correctCos - offsetX * correctSin;
+        double stepAngle = (endAngle - startAngle) / (double) repeat;
+        AtomicDouble atomicDouble = new AtomicDouble(startAngle);
         switch (coordinate) {
             case XY -> Countdowner.start(plugin, false, repeat + 1, 0L, period, null, repeatLeft -> {
-                final double radians = Math.toRadians(atomicDouble.getAndAdd(stepAngle)), x = radius * Math.sin(radians), y = radius * Math.sin(radians);
-                final double correctX = - x * correctCos, correctZ = - x * correctSin;
+                double radians = Math.toRadians(atomicDouble.getAndAdd(stepAngle)), x = radius * Math.sin(radians), y = radius * Math.sin(radians);
+                double correctX = - x * correctCos, correctZ = - x * correctSin;
                 location.add(correctX, y, correctZ);
-                for (final Entity entity : entityCollection) {
+                for (Entity entity : entityCollection) {
                     ((Player) entity).spawnParticle(particle, location, count, correctOffsetX, offsetY, correctOffsetZ, speed, data);
                 }
                 location.subtract(correctX, y, correctZ);
                 return true;
             }, null);
             case YZ -> Countdowner.start(plugin, false, repeat + 1, 0L, period, null, repeatLeft -> {
-                final double radians = Math.toRadians(atomicDouble.getAndAdd(stepAngle)), z = radius * Math.cos(radians), y = radius * Math.sin(radians);
-                final double correctX = - z * correctSin, correctZ = z * correctCos;
+                double radians = Math.toRadians(atomicDouble.getAndAdd(stepAngle)), z = radius * Math.cos(radians), y = radius * Math.sin(radians);
+                double correctX = - z * correctSin, correctZ = z * correctCos;
                 location.add(correctX, y, correctZ);
-                for (final Entity entity : entityCollection) {
+                for (Entity entity : entityCollection) {
                     ((Player) entity).spawnParticle(particle, location, count, correctOffsetX, offsetY, correctOffsetZ, speed, data);
                 }
                 location.subtract(correctX, y, correctZ);
                 return true;
             }, null);
             case XZ -> Countdowner.start(plugin, false, repeat + 1, 0L, period, null, repeatLeft -> {
-                final double radians = Math.toRadians(atomicDouble.getAndAdd(stepAngle)), x = radius * Math.sin(radians), z = radius * Math.cos(radians);
-                final double correctX = - x * correctCos - z * correctSin, correctZ = z * correctCos - x * correctSin;
+                double radians = Math.toRadians(atomicDouble.getAndAdd(stepAngle)), x = radius * Math.sin(radians), z = radius * Math.cos(radians);
+                double correctX = - x * correctCos - z * correctSin, correctZ = z * correctCos - x * correctSin;
                 location.add(correctX, 0, correctZ);
-                for (final Entity entity : entityCollection) {
+                for (Entity entity : entityCollection) {
                     ((Player) entity).spawnParticle(particle, location, count, correctOffsetX, offsetY, correctOffsetZ, speed, data);
                 }
                 location.subtract(correctX, 0, correctZ);
@@ -115,17 +115,17 @@ public class ParticleUtils {
         }
     }
 
-    public static <T> void play3DAnimation(@NotNull final AbstractPlugin plugin, @NotNull final Location location, @NotNull final Particle particle, final boolean reverse, final int count, final double offsetX, final double offsetY, final double offsetZ, final double speed, @Nullable final T data, final double startAngle, final double endAngle, final double radius, final int repeat, final long period) {
-        final Collection<Entity> entityCollection = TargetUtils.getPlayers(location, 20.0D, 10.0D, 20.0D, -20.0D, -10.0D, -20.0D, null);
-        final double correctRadians = Math.toRadians(location.getYaw()), correctSin = Math.sin(correctRadians), correctCos = Math.cos(correctRadians);
-        final double correctOffsetX = - offsetX * correctCos - offsetZ * correctSin, correctOffsetZ = offsetZ * correctCos - offsetX * correctSin;
-        final double stepAngle = (endAngle - startAngle) / (double) repeat;
-        final AtomicDouble atomicDouble = new AtomicDouble(startAngle);
+    public static <T> void play3DParticleAnimation(@NotNull AbstractPlugin plugin, @NotNull Location location, @NotNull Particle particle, boolean reverse, int count, double offsetX, double offsetY, double offsetZ, double speed, @Nullable T data, double startAngle, double endAngle, double radius, int repeat, long period) {
+        Collection<Entity> entityCollection = TargetUtils.getPlayers(location, 20.0D, 10.0D, 20.0D, -20.0D, -10.0D, -20.0D, null);
+        double correctRadians = Math.toRadians(location.getYaw()), correctSin = Math.sin(correctRadians), correctCos = Math.cos(correctRadians);
+        double correctOffsetX = - offsetX * correctCos - offsetZ * correctSin, correctOffsetZ = offsetZ * correctCos - offsetX * correctSin;
+        double stepAngle = (endAngle - startAngle) / (double) repeat;
+        AtomicDouble atomicDouble = new AtomicDouble(startAngle);
         Countdowner.start(plugin, false, repeat + 1, 0L, period, null, repeatLeft -> {
-            final double radians = Math.toRadians(atomicDouble.getAndAdd(stepAngle)), x = radius * Math.sin(radians), z = radius * Math.cos(radians), y = Math.sin(radians);
-            final double correctX = reverse ? x * correctCos + z * correctSin : - x * correctCos - z * correctSin, correctZ = reverse ? x * correctSin - z * correctCos : z * correctCos - x * correctSin;
+            double radians = Math.toRadians(atomicDouble.getAndAdd(stepAngle)), x = radius * Math.sin(radians), z = radius * Math.cos(radians), y = Math.sin(radians);
+            double correctX = reverse ? x * correctCos + z * correctSin : - x * correctCos - z * correctSin, correctZ = reverse ? x * correctSin - z * correctCos : z * correctCos - x * correctSin;
             location.add(correctX, y, correctZ);
-            for (final Entity entity : entityCollection) {
+            for (Entity entity : entityCollection) {
                 ((Player) entity).spawnParticle(particle, location, count, correctOffsetX, offsetY, correctOffsetZ, speed, data);
             }
             location.subtract(correctX, y, correctZ);
