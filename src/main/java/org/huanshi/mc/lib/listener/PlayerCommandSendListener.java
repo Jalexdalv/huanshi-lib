@@ -15,11 +15,11 @@ public class PlayerCommandSendListener extends AbstractListener {
 
     @EventHandler
     public void onPlayerCommandSend(@NotNull PlayerCommandSendEvent playerCommandSendEvent) {
-        Collection<String> collection = playerCommandSendEvent.getCommands();
-        collection.clear();
-        collection.addAll(commandNameService.getNames());
+        Collection<String> commandCollection = playerCommandSendEvent.getCommands();
+        commandCollection.clear();
+        commandCollection.addAll(commandNameService.getNames());
         if (playerCommandSendEvent.getPlayer().isOp()) {
-            collection.addAll(commandNameService.getOpNames());
+            commandCollection.addAll(commandNameService.getOpNames());
         }
     }
 }

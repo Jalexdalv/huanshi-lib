@@ -6,7 +6,7 @@ import org.bukkit.Particle;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.huanshi.mc.framework.AbstractPlugin;
-import org.huanshi.mc.lib.timer.Countdowner;
+import org.huanshi.mc.framework.timer.Countdowner;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -82,36 +82,45 @@ public class ParticleUtils {
         double stepAngle = (endAngle - startAngle) / (double) repeat;
         AtomicDouble atomicDouble = new AtomicDouble(startAngle);
         switch (coordinate) {
-            case XY -> Countdowner.start(plugin, false, repeat + 1, 0L, period, null, repeatLeft -> {
-                double radians = Math.toRadians(atomicDouble.getAndAdd(stepAngle)), x = radius * Math.sin(radians), y = radius * Math.sin(radians);
-                double correctX = - x * correctCos, correctZ = - x * correctSin;
-                location.add(correctX, y, correctZ);
-                for (Entity entity : entityCollection) {
-                    ((Player) entity).spawnParticle(particle, location, count, correctOffsetX, offsetY, correctOffsetZ, speed, data);
+            case XY -> new Countdowner(plugin, false, false, repeat + 1, 0, period) {
+                @Override
+                protected boolean onRun(int repeatLeft) {
+                    double radians = Math.toRadians(atomicDouble.getAndAdd(stepAngle)), x = radius * Math.sin(radians), y = radius * Math.sin(radians);
+                    double correctX = - x * correctCos, correctZ = - x * correctSin;
+                    location.add(correctX, y, correctZ);
+                    for (Entity entity : entityCollection) {
+                        ((Player) entity).spawnParticle(particle, location, count, correctOffsetX, offsetY, correctOffsetZ, speed, data);
+                    }
+                    location.subtract(correctX, y, correctZ);
+                    return true;
                 }
-                location.subtract(correctX, y, correctZ);
-                return true;
-            }, null);
-            case YZ -> Countdowner.start(plugin, false, repeat + 1, 0L, period, null, repeatLeft -> {
-                double radians = Math.toRadians(atomicDouble.getAndAdd(stepAngle)), z = radius * Math.cos(radians), y = radius * Math.sin(radians);
-                double correctX = - z * correctSin, correctZ = z * correctCos;
-                location.add(correctX, y, correctZ);
-                for (Entity entity : entityCollection) {
-                    ((Player) entity).spawnParticle(particle, location, count, correctOffsetX, offsetY, correctOffsetZ, speed, data);
+            }.start();
+            case YZ -> new Countdowner(plugin, false, false, repeat + 1, 0, period) {
+                @Override
+                protected boolean onRun(int repeatLeft) {
+                    double radians = Math.toRadians(atomicDouble.getAndAdd(stepAngle)), z = radius * Math.cos(radians), y = radius * Math.sin(radians);
+                    double correctX = - z * correctSin, correctZ = z * correctCos;
+                    location.add(correctX, y, correctZ);
+                    for (Entity entity : entityCollection) {
+                        ((Player) entity).spawnParticle(particle, location, count, correctOffsetX, offsetY, correctOffsetZ, speed, data);
+                    }
+                    location.subtract(correctX, y, correctZ);
+                    return true;
                 }
-                location.subtract(correctX, y, correctZ);
-                return true;
-            }, null);
-            case XZ -> Countdowner.start(plugin, false, repeat + 1, 0L, period, null, repeatLeft -> {
-                double radians = Math.toRadians(atomicDouble.getAndAdd(stepAngle)), x = radius * Math.sin(radians), z = radius * Math.cos(radians);
-                double correctX = - x * correctCos - z * correctSin, correctZ = z * correctCos - x * correctSin;
-                location.add(correctX, 0, correctZ);
-                for (Entity entity : entityCollection) {
-                    ((Player) entity).spawnParticle(particle, location, count, correctOffsetX, offsetY, correctOffsetZ, speed, data);
+            }.start();
+            case XZ -> new Countdowner(plugin, false, false, repeat + 1, 0, period) {
+                @Override
+                protected boolean onRun(int repeatLeft) {
+                    double radians = Math.toRadians(atomicDouble.getAndAdd(stepAngle)), x = radius * Math.sin(radians), z = radius * Math.cos(radians);
+                    double correctX = - x * correctCos - z * correctSin, correctZ = z * correctCos - x * correctSin;
+                    location.add(correctX, 0, correctZ);
+                    for (Entity entity : entityCollection) {
+                        ((Player) entity).spawnParticle(particle, location, count, correctOffsetX, offsetY, correctOffsetZ, speed, data);
+                    }
+                    location.subtract(correctX, 0, correctZ);
+                    return true;
                 }
-                location.subtract(correctX, 0, correctZ);
-                return true;
-            }, null);
+            }.start();
         }
     }
 
@@ -121,15 +130,18 @@ public class ParticleUtils {
         double correctOffsetX = - offsetX * correctCos - offsetZ * correctSin, correctOffsetZ = offsetZ * correctCos - offsetX * correctSin;
         double stepAngle = (endAngle - startAngle) / (double) repeat;
         AtomicDouble atomicDouble = new AtomicDouble(startAngle);
-        Countdowner.start(plugin, false, repeat + 1, 0L, period, null, repeatLeft -> {
-            double radians = Math.toRadians(atomicDouble.getAndAdd(stepAngle)), x = radius * Math.sin(radians), z = radius * Math.cos(radians), y = Math.sin(radians);
-            double correctX = reverse ? x * correctCos + z * correctSin : - x * correctCos - z * correctSin, correctZ = reverse ? x * correctSin - z * correctCos : z * correctCos - x * correctSin;
-            location.add(correctX, y, correctZ);
-            for (Entity entity : entityCollection) {
-                ((Player) entity).spawnParticle(particle, location, count, correctOffsetX, offsetY, correctOffsetZ, speed, data);
+        new Countdowner(plugin, false, false, repeat + 1, 0, period) {
+            @Override
+            protected boolean onRun(int repeatLeft) {
+                double radians = Math.toRadians(atomicDouble.getAndAdd(stepAngle)), x = radius * Math.sin(radians), z = radius * Math.cos(radians), y = Math.sin(radians);
+                double correctX = reverse ? x * correctCos + z * correctSin : - x * correctCos - z * correctSin, correctZ = reverse ? x * correctSin - z * correctCos : z * correctCos - x * correctSin;
+                location.add(correctX, y, correctZ);
+                for (Entity entity : entityCollection) {
+                    ((Player) entity).spawnParticle(particle, location, count, correctOffsetX, offsetY, correctOffsetZ, speed, data);
+                }
+                location.subtract(correctX, y, correctZ);
+                return true;
             }
-            location.subtract(correctX, y, correctZ);
-            return true;
-        }, null);
+        }.start();
     }
 }
