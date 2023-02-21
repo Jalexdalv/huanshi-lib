@@ -21,7 +21,7 @@ public class PlayerCommandPreprocessListener extends AbstractListener {
     private final Cooldowner cooldowner = new Cooldowner();
 
     @Override
-    public final void onLoad() {
+    public final void load() {
         cd = mainConfig.getLong("command.cd");
     }
 

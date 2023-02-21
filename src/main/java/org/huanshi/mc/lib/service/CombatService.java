@@ -2,9 +2,9 @@ package org.huanshi.mc.lib.service;
 
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.huanshi.mc.framework.annotation.Autowired;
+import org.huanshi.mc.framework.api.BukkitApi;
 import org.huanshi.mc.framework.service.AbstractService;
 import org.huanshi.mc.lib.Plugin;
 import org.huanshi.mc.lib.config.MainConfig;
@@ -27,7 +27,7 @@ public class CombatService extends AbstractService {
     private final Timer timer = new Timer();
 
     @Override
-    public final void onLoad() {
+    public final void load() {
         duration = mainConfig.getLong("combat.duration");
     }
 
@@ -35,14 +35,14 @@ public class CombatService extends AbstractService {
         UUID uuid = player.getUniqueId();
         timer.reentry(plugin, player, true, duration, 0L, 500L, null,
             () -> {
-                Bukkit.getScheduler().runTask(plugin, () -> Bukkit.getPluginManager().callEvent(new PlayerToggleCombatEvent(player, true)));
+                BukkitApi.runTask(plugin, () -> BukkitApi.callEvent(new PlayerToggleCombatEvent(player, true)));
                 bossBarMap.putIfAbsent(uuid, BossBar.bossBar(Component.empty(), 1.0F, BossBar.Color.RED, BossBar.Overlay.PROGRESS));
                 return true;
             }, durationLeft -> {
                 player.showBossBar(bossBarMap.get(uuid).name(Zh.combat(durationLeft)).progress((float) durationLeft / (float) duration));
                 return true;
             }, () -> {
-                Bukkit.getScheduler().runTask(plugin, () -> Bukkit.getPluginManager().callEvent(new PlayerToggleCombatEvent(player, false)));
+                BukkitApi.runTask(plugin, () -> BukkitApi.callEvent(new PlayerToggleCombatEvent(player, false)));
                 player.hideBossBar(bossBarMap.get(uuid));
                 return true;
             }

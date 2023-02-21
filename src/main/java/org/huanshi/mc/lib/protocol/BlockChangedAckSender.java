@@ -4,10 +4,10 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.huanshi.mc.framework.annotation.Autowired;
 import org.huanshi.mc.framework.annotation.ProtocolHandler;
+import org.huanshi.mc.framework.api.BukkitApi;
 import org.huanshi.mc.framework.protocol.AbstractProtocol;
 import org.huanshi.mc.lib.Plugin;
 import org.huanshi.mc.lib.event.PlayerBlockEvent;
@@ -24,7 +24,7 @@ public class BlockChangedAckSender extends AbstractProtocol {
             public void onPacketSending(PacketEvent packetEvent) {
                 Player player = packetEvent.getPlayer();
                 if (player.isHandRaised()) {
-                    Bukkit.getPluginManager().callEvent(new PlayerBlockEvent(player));
+                    BukkitApi.callEvent(new PlayerBlockEvent(player));
                 }
             }
         };

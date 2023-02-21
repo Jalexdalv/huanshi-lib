@@ -1,6 +1,7 @@
 package org.huanshi.mc.lib.timer;
 
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.huanshi.mc.lib.lang.Zh;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -18,8 +19,8 @@ public class Cooldowner {
         UUID uuid = entity.getUniqueId();
         long durationLeft = getDurationLeft(uuid);
         if (durationLeft > 0) {
-            if (cooldownerRunHandler == null || cooldownerRunHandler.handle(durationLeft)) {
-                entity.sendActionBar(Zh.cd(durationLeft));
+            if ((cooldownerRunHandler == null || cooldownerRunHandler.handle(durationLeft)) && entity instanceof Player player) {
+                player.sendActionBar(Zh.cd(durationLeft));
             }
         } else if (cooldownerStartHandler == null || cooldownerStartHandler.handle()) {
             timeMap.put(uuid, System.currentTimeMillis() + duration);

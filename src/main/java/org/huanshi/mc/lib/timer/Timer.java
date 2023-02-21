@@ -3,7 +3,7 @@ package org.huanshi.mc.lib.timer;
 import org.bukkit.entity.Entity;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.huanshi.mc.framework.AbstractPlugin;
-import org.huanshi.mc.framework.utils.FormatUtils;
+import org.huanshi.mc.framework.api.BukkitApi;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,7 +27,7 @@ public class Timer {
                         long durationLeft = getDurationLeft(uuid);
                         if (durationLeft > 0) {
                             if (timerRunHandler == null || timerRunHandler.handle(durationLeft)) {
-                                durationMap.put(uuid, Math.max(durationLeft - 50L * period, 0L));
+                                durationMap.put(uuid, Math.max(durationLeft - period, 0L));
                             }
                         } else if (timerStopHandler == null || timerStopHandler.handle()) {
                             durationMap.remove(uuid);
@@ -35,11 +35,10 @@ public class Timer {
                         }
                     }
                 };
-                long delayTick = FormatUtils.convertDurationToTick(delay), periodTick = FormatUtils.convertDurationToTick(period);
                 if (async) {
-                    bukkitRunnable.runTaskTimerAsynchronously(plugin, delayTick, periodTick);
+                    BukkitApi.runTaskTimerAsynchronously(plugin, bukkitRunnable, delay, period);
                 } else {
-                    bukkitRunnable.runTaskTimer(plugin, delayTick, periodTick);
+                    BukkitApi.runTaskTimer(plugin, bukkitRunnable, delay, period);
                 }
             }
         }
@@ -68,11 +67,10 @@ public class Timer {
                         }
                     }
                 };
-                long delayTick = FormatUtils.convertDurationToTick(delay), periodTick = FormatUtils.convertDurationToTick(period);
                 if (async) {
-                    bukkitRunnable.runTaskTimerAsynchronously(plugin, delayTick, periodTick);
+                    BukkitApi.runTaskTimerAsynchronously(plugin, bukkitRunnable, delay, period);
                 } else {
-                    bukkitRunnable.runTaskTimer(plugin, delayTick, periodTick);
+                    BukkitApi.runTaskTimer(plugin, bukkitRunnable, delay, period);
                 }
             }
         }
