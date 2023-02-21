@@ -8,7 +8,7 @@ import org.huanshi.mc.framework.annotation.Autowired;
 import org.huanshi.mc.framework.listener.AbstractListener;
 import org.huanshi.mc.lib.config.MainConfig;
 import org.huanshi.mc.lib.lang.Zh;
-import org.huanshi.mc.lib.service.CommandHeadService;
+import org.huanshi.mc.lib.service.CommandNameService;
 import org.huanshi.mc.lib.timer.Cooldowner;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,7 +16,7 @@ public class PlayerCommandPreprocessListener extends AbstractListener {
     @Autowired
     private MainConfig mainConfig;
     @Autowired
-    private CommandHeadService commandHeadService;
+    private CommandNameService commandNameService;
     private long cd;
     private final Cooldowner cooldowner = new Cooldowner();
 
@@ -30,8 +30,8 @@ public class PlayerCommandPreprocessListener extends AbstractListener {
         Player player = playerCommandPreprocessEvent.getPlayer();
         cooldowner.start(player, cd,
             () -> {
-                String command = StringUtils.replaceOnce(StringUtils.split(playerCommandPreprocessEvent.getMessage(), " ")[0], "/", "");
-                if (!commandHeadService.isCommandHead(command)) {
+                String name = StringUtils.replaceOnce(StringUtils.split(playerCommandPreprocessEvent.getMessage(), " ")[0], "/", "");
+                if (!commandNameService.isCommand(name)) {
                     playerCommandPreprocessEvent.setCancelled(true);
                     player.sendMessage(Zh.UNKNOWN_COMMAND);
                 }
