@@ -24,9 +24,9 @@ public class CombatService extends AbstractService {
     private Plugin plugin;
     @Autowired
     private MainConfig mainConfig;
-    private long duration;
-    private final Map<UUID, BossBar> bossBarMap = new ConcurrentHashMap<>();
-    private final Map<UUID, Timer> timerMap = new HashMap<>();
+    protected long duration;
+    protected final Map<UUID, BossBar> bossBarMap = new ConcurrentHashMap<>();
+    protected final Map<UUID, Timer> timerMap = new HashMap<>();
 
     @Override
     public final void onLoad() {
@@ -41,13 +41,11 @@ public class CombatService extends AbstractService {
                 bossBarMap.putIfAbsent(uuid, BossBar.bossBar(Component.empty(), 1.0F, BossBar.Color.RED, BossBar.Overlay.PROGRESS));
                 return true;
             }
-
             @Override
             protected boolean onRun(long durationLeft) {
                 player.showBossBar(bossBarMap.get(uuid).name(Zh.combat(durationLeft)).progress((float) durationLeft / (float) duration));
                 return true;
             }
-
             @Override
             protected boolean onStop() {
                 Bukkit.getScheduler().runTask(plugin, () -> Bukkit.getPluginManager().callEvent(new PlayerToggleCombatEvent(player, false)));

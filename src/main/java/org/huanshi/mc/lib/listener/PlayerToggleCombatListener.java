@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public class PlayerToggleCombatListener extends AbstractListener {
-    private final Set<UUID> flySet = new HashSet<>();
+    protected final Set<UUID> flySet = new HashSet<>();
 
     @EventHandler
     public void onPlayerToggleCombat(@NotNull PlayerToggleCombatEvent playerToggleCombatEvent) {

@@ -13,9 +13,4 @@ public class Zh {
     public static @NotNull Component combat(long duration) {
         return Component.text(FormatUtils.convertMillisecondToSecond(duration), NamedTextColor.YELLOW).append(COMBAT);
     }
-    private static final Component CD_1 = Component.text("冷却中, 请等待 ", NamedTextColor.RED);
-    private static final Component CD_2 = Component.text(" 秒", NamedTextColor.RED);
-    public static @NotNull Component cd(long duration) {
-        return CD_1.append(Component.text(FormatUtils.convertMillisecondToSecond(duration), NamedTextColor.YELLOW)).append(CD_2);
-    }
 }
