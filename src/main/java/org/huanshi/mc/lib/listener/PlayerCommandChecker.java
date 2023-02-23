@@ -2,10 +2,10 @@ package org.huanshi.mc.lib.listener;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.huanshi.mc.framework.command.AbstractPlayerCommand;
-import org.huanshi.mc.framework.engine.Component;
+import org.huanshi.mc.framework.command.AbstractCommand;
 import org.huanshi.mc.framework.event.ComponentScanCompleteEvent;
 import org.huanshi.mc.framework.listener.AbstractListener;
+import org.huanshi.mc.framework.pojo.HuanshiComponent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -15,38 +15,31 @@ import java.util.List;
 import java.util.Map;
 
 public class PlayerCommandChecker extends AbstractListener {
-    protected final List<String> playerCommandNameList = new LinkedList<>();
-    protected final Map<String, AbstractPlayerCommand> commonPlayerCommandMap = new HashMap<>(), opPlayerCommandMap = new HashMap<>();
+    protected final Map<String, AbstractCommand> commonCommandMap = new HashMap<>();
 
     @EventHandler
     public void onComponentScanComplete(@NotNull ComponentScanCompleteEvent componentScanCompleteEvent) {
-        for (Component component : componentScanCompleteEvent.getComponents()) {
-            if (component instanceof AbstractPlayerCommand playerCommand) {
-                String name = playerCommand.getName();
-                playerCommandNameList.add(name);
-                if (playerCommand.isOp()) {
-                    opPlayerCommandMap.put(name, playerCommand);
-                } else {
-                    commonPlayerCommandMap.put(name, playerCommand);
-                }
+        for (HuanshiComponent huanshiComponent : componentScanCompleteEvent.getHuanshiComponents()) {
+            if (huanshiComponent instanceof AbstractCommand command) {
+                commonCommandMap.put(command.getName(), command);
             }
         }
     }
 
-    public boolean check(@NotNull Player player, @NotNull String name) {
-        return commonPlayerCommandMap.containsKey(name) || (player.isOp() && opPlayerCommandMap.containsKey(name));
+    public boolean check(@NotNull String name) {
+        return commonCommandMap.containsKey(name);
     }
 
     public @NotNull Collection<String> getPlayerCommandNames(@NotNull Player player) {
         if (player.isOp()) {
-            return playerCommandNameList;
+            return commonCommandMap.keySet();
         }
-        List<String> playerCommandNameList = new LinkedList<>();
-        for (AbstractPlayerCommand playerCommand : commonPlayerCommandMap.values()) {
-            if (playerCommand.hasPermission(player)) {
-                playerCommandNameList.add(playerCommand.getName());
+        List<String> commandNameList = new LinkedList<>();
+        for (AbstractCommand command : commonCommandMap.values()) {
+            if (command.hasPermission(player)) {
+                commandNameList.add(command.getName());
             }
         }
-        return playerCommandNameList;
+        return commandNameList;
     }
 }

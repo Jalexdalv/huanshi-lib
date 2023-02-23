@@ -1,9 +1,11 @@
 package org.huanshi.mc.lib.listener;
 
+import net.kyori.adventure.text.Component;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.huanshi.mc.framework.AbstractPlugin;
 import org.huanshi.mc.framework.annotation.Autowired;
 import org.huanshi.mc.framework.listener.AbstractListener;
 import org.huanshi.mc.framework.timer.Cooldowner;
@@ -19,13 +21,18 @@ public class PlayerCommandPreprocessListener extends AbstractListener {
     @Autowired
     private MainConfig mainConfig;
     @Autowired
+    private Zh zh;
+    @Autowired
     private PlayerCommandChecker playerCommandChecker;
     protected long cd;
+    protected Component unknownCommand, useCommandFast;
     protected final Map<UUID, Cooldowner> cooldownerMap = new HashMap<>();
 
     @Override
-    public final void onLoad() {
+    public final void load(@NotNull AbstractPlugin plugin) {
         cd = mainConfig.getLong("command.cd");
+        unknownCommand = zh.getComponent("unknown-command");
+        useCommandFast = zh.getComponent("use-command-fast");
     }
 
     @EventHandler
@@ -34,16 +41,16 @@ public class PlayerCommandPreprocessListener extends AbstractListener {
         cooldownerMap.computeIfAbsent(player.getUniqueId(), uuid -> new Cooldowner(false, cd) {
             @Override
             protected boolean onStart() {
-                if (!playerCommandChecker.check(player, StringUtils.replaceOnce(StringUtils.split(playerCommandPreprocessEvent.getMessage(), " ")[0], "/", ""))) {
+                if (!playerCommandChecker.check(StringUtils.replaceOnce(StringUtils.split(playerCommandPreprocessEvent.getMessage(), " ")[0], "/", ""))) {
                     playerCommandPreprocessEvent.setCancelled(true);
-                    player.sendMessage(Zh.UNKNOWN_COMMAND);
+                    player.sendMessage(unknownCommand);
                 }
                 return true;
             }
             @Override
             protected void onRun(long durationLeft) {
                 playerCommandPreprocessEvent.setCancelled(true);
-                player.sendMessage(Zh.USE_COMMAND_FAST);
+                player.sendMessage(useCommandFast);
             }
         }).start();
     }
