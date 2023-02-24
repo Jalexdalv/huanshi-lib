@@ -29,7 +29,7 @@ public class PlayerCommandPreprocessListener extends AbstractListener {
     protected final Map<UUID, Cooldowner> cooldownerMap = new HashMap<>();
 
     @Override
-    public final void load(@NotNull AbstractPlugin plugin) {
+    public void onLoad(@NotNull AbstractPlugin plugin) {
         cd = mainConfig.getLong("command.cd");
         unknownCommand = zh.getComponent("unknown-command");
         useCommandFast = zh.getComponent("use-command-fast");

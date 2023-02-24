@@ -34,12 +34,12 @@ public class PlayerCommandChecker extends AbstractListener {
         if (player.isOp()) {
             return commonCommandMap.keySet();
         }
-        List<String> commandNameList = new LinkedList<>();
+        List<String> commandNames = new LinkedList<>();
         for (AbstractCommand command : commonCommandMap.values()) {
             if (command.hasPermission(player)) {
-                commandNameList.add(command.getName());
+                commandNames.add(command.getName());
             }
         }
-        return commandNameList;
+        return commandNames;
     }
 }

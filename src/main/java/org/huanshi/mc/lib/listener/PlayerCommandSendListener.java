@@ -14,8 +14,8 @@ public class PlayerCommandSendListener extends AbstractListener {
 
     @EventHandler
     public void onPlayerCommandSend(@NotNull PlayerCommandSendEvent playerCommandSendEvent) {
-        Collection<String> commandCollection = playerCommandSendEvent.getCommands();
-        commandCollection.clear();
-        commandCollection.addAll(playerCommandChecker.getPlayerCommandNames(playerCommandSendEvent.getPlayer()));
+        Collection<String> commands = playerCommandSendEvent.getCommands();
+        commands.clear();
+        commands.addAll(playerCommandChecker.getPlayerCommandNames(playerCommandSendEvent.getPlayer()));
     }
 }

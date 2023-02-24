@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public class PlayerToggleCombatListener extends AbstractListener {
-    protected final Set<UUID> flySet = new HashSet<>();
+    protected final Set<UUID> flies = new HashSet<>();
 
     @EventHandler
     public void onPlayerToggleCombat(@NotNull PlayerToggleCombatEvent playerToggleCombatEvent) {
@@ -20,11 +20,11 @@ public class PlayerToggleCombatListener extends AbstractListener {
         if (playerToggleCombatEvent.isCombating()) {
             if (player.getAllowFlight()) {
                 player.setAllowFlight(false);
-                flySet.add(uuid);
+                flies.add(uuid);
             }
-        } else if (flySet.contains(uuid)) {
+        } else if (flies.contains(uuid)) {
             player.setAllowFlight(true);
-            flySet.remove(uuid);
+            flies.remove(uuid);
         }
     }
 }

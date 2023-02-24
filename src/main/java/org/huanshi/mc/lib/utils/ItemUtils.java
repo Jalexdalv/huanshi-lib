@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class ItemUtils {
-    private static final Set<Material> SWORD_SET = new HashSet<>() {{
+    private static final Set<Material> SWORDS = new HashSet<>() {{
         add(Material.WOODEN_SWORD);
         add(Material.STONE_SWORD);
         add(Material.IRON_SWORD);
@@ -18,7 +18,7 @@ public class ItemUtils {
         add(Material.DIAMOND_SWORD);
         add(Material.NETHERITE_SWORD);
     }};
-    private static final Set<Material> AXE_SET = new HashSet<>() {{
+    private static final Set<Material> AXES = new HashSet<>() {{
         add(Material.WOODEN_AXE);
         add(Material.STONE_AXE);
         add(Material.IRON_AXE);
@@ -28,11 +28,11 @@ public class ItemUtils {
     }};
 
     public static boolean isSword(@NotNull ItemStack itemStack) {
-        return SWORD_SET.contains(itemStack.getType());
+        return SWORDS.contains(itemStack.getType());
     }
 
     public static boolean isAxe(@NotNull ItemStack itemStack) {
-        return AXE_SET.contains(itemStack.getType());
+        return AXES.contains(itemStack.getType());
     }
 
     public static boolean isShieldInOffHand(@NotNull Player player) {

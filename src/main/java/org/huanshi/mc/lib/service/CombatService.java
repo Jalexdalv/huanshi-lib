@@ -34,7 +34,7 @@ public class CombatService extends AbstractService {
     protected final Map<UUID, Timer> timerMap = new WeakHashMap<>();
 
     @Override
-    public void load(@NotNull AbstractPlugin plugin) {
+    public void onLoad(@NotNull AbstractPlugin plugin) {
         duration = mainConfig.getLong("combat.duration");
         combat = zh.getComponent("combat");
     }
