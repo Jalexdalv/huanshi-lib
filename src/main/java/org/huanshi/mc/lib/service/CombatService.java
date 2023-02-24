@@ -4,10 +4,10 @@ import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.huanshi.mc.framework.AbstractPlugin;
+import org.huanshi.mc.framework.HuanshiPlugin;
 import org.huanshi.mc.framework.annotation.Autowired;
 import org.huanshi.mc.framework.api.BukkitAPI;
-import org.huanshi.mc.framework.service.AbstractService;
+import org.huanshi.mc.framework.service.HuanshiService;
 import org.huanshi.mc.framework.timer.Timer;
 import org.huanshi.mc.framework.utils.FormatUtils;
 import org.huanshi.mc.lib.Plugin;
@@ -21,7 +21,7 @@ import java.util.UUID;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class CombatService extends AbstractService {
+public class CombatService extends HuanshiService {
     @Autowired
     private Plugin plugin;
     @Autowired
@@ -34,7 +34,7 @@ public class CombatService extends AbstractService {
     protected final Map<UUID, Timer> timerMap = new WeakHashMap<>();
 
     @Override
-    public void onLoad(@NotNull AbstractPlugin plugin) {
+    public void onLoad(@NotNull HuanshiPlugin huanshiPlugin) {
         duration = mainConfig.getLong("combat.duration");
         combat = zh.getComponent("combat");
     }

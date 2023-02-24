@@ -3,10 +3,10 @@ package org.huanshi.mc.lib.service;
 import net.kyori.adventure.text.Component;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.entity.Player;
-import org.huanshi.mc.framework.AbstractPlugin;
+import org.huanshi.mc.framework.HuanshiPlugin;
 import org.huanshi.mc.framework.annotation.Autowired;
-import org.huanshi.mc.framework.command.AbstractCommand;
-import org.huanshi.mc.framework.service.AbstractService;
+import org.huanshi.mc.framework.command.HuanshiCommand;
+import org.huanshi.mc.framework.service.HuanshiService;
 import org.huanshi.mc.framework.timer.Cooldowner;
 import org.huanshi.mc.lib.config.MainConfig;
 import org.huanshi.mc.lib.lang.Zh;
@@ -19,18 +19,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public class CommandService extends AbstractService {
+public class CommandService extends HuanshiService {
     @Autowired
     private MainConfig mainConfig;
     @Autowired
     private Zh zh;
     protected long cd;
     protected Component unknownCommand, useCommandFast;
-    protected final Map<String, AbstractCommand> commandMap = new HashMap<>();
+    protected final Map<String, HuanshiCommand> huanshiCommandMap = new HashMap<>();
     protected final Map<UUID, Cooldowner> cooldownerMap = new HashMap<>();
 
     @Override
-    public void onLoad(@NotNull AbstractPlugin plugin) {
+    public void onLoad(@NotNull HuanshiPlugin huanshiPlugin) {
         cd = mainConfig.getLong("command.cd");
         unknownCommand = zh.getComponent("unknown-command");
         useCommandFast = zh.getComponent("use-command-fast");
@@ -59,24 +59,24 @@ public class CommandService extends AbstractService {
         }).start();
     }
 
-    public void register(@NotNull String name, @NotNull AbstractCommand command) {
-        commandMap.put(name, command);
+    public void register(@NotNull String name, @NotNull HuanshiCommand huanshiCommand) {
+        huanshiCommandMap.put(name, huanshiCommand);
     }
 
     public boolean check(@NotNull String name) {
-        return commandMap.containsKey(name);
+        return huanshiCommandMap.containsKey(name);
     }
 
-    public @NotNull Collection<String> getCommandNames(@NotNull Player player) {
+    public @NotNull Collection<String> getHuanshiCommandNames(@NotNull Player player) {
         if (player.isOp()) {
-            return commandMap.keySet();
+            return huanshiCommandMap.keySet();
         }
-        List<String> commandNames = new LinkedList<>();
-        for (AbstractCommand command : commandMap.values()) {
-            if (command.hasPermission(player)) {
-                commandNames.add(command.getName());
+        List<String> huanshiCommandNames = new LinkedList<>();
+        for (HuanshiCommand huanshiCommand : huanshiCommandMap.values()) {
+            if (huanshiCommand.hasPermission(player)) {
+                huanshiCommandNames.add(huanshiCommand.getName());
             }
         }
-        return commandNames;
+        return huanshiCommandNames;
     }
 }
