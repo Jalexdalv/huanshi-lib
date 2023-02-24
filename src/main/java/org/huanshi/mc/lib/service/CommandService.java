@@ -37,20 +37,25 @@ public class CommandService extends AbstractService {
     }
 
     public boolean check(@NotNull Player player, @NotNull String message) {
-        return cooldownerMap.computeIfAbsent(player.getUniqueId(), uuid -> new Cooldowner(false, cd) {
-            @Override
-            protected boolean onStart() {
-                if (check(StringUtils.replaceOnce(StringUtils.split(message, " ")[0], "/", ""))) {
-                    return true;
-                }
-                player.sendMessage(unknownCommand);
-                return false;
+        return cooldownerMap.compute(player.getUniqueId(), (uuid, cooldowner) -> {
+            if (cooldowner == null) {
+                return new Cooldowner(false, cd) {
+                    @Override
+                    protected boolean onStart() {
+                        if (check(StringUtils.replaceOnce(StringUtils.split(message, " ")[0], "/", ""))) {
+                            return true;
+                        }
+                        player.sendMessage(unknownCommand);
+                        return false;
+                    }
+                    @Override
+                    protected boolean onRun(long durationLeft) {
+                        player.sendMessage(useCommandFast);
+                        return false;
+                    }
+                };
             }
-            @Override
-            protected boolean onRun(long durationLeft) {
-                player.sendMessage(useCommandFast);
-                return false;
-            }
+            return cooldowner;
         }).start();
     }
 
@@ -62,7 +67,7 @@ public class CommandService extends AbstractService {
         return commandMap.containsKey(name);
     }
 
-    public @NotNull Collection<String> getPlayerCommandNames(@NotNull Player player) {
+    public @NotNull Collection<String> getCommandNames(@NotNull Player player) {
         if (player.isOp()) {
             return commandMap.keySet();
         }

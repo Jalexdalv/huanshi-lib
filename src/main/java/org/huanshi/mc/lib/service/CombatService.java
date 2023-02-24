@@ -79,10 +79,10 @@ public class CombatService extends AbstractService {
 
     public boolean isRunning(@NotNull UUID uuid) {
         Timer timer = timerMap.get(uuid);
-        if (timer != null) {
-            return timer.isRunning();
+        if (timer == null) {
+            return false;
         }
-        return false;
+        return timer.isRunning();
     }
 
     public boolean isRunning(@NotNull Player player) {

@@ -11,6 +11,6 @@ public class ClientCommandSender extends AbstractProtocol {
     public void autoRespawn(@NotNull Player player) {
         PacketContainer packetContainer = new PacketContainer(PacketType.Play.Client.CLIENT_COMMAND);
         packetContainer.getClientCommands().write(0, EnumWrappers.ClientCommand.PERFORM_RESPAWN);
-        getProtocolManager().receiveClientPacket(player, packetContainer, false);
+        PROTOCOL_MANAGER.receiveClientPacket(player, packetContainer, false);
     }
 }
