@@ -51,7 +51,7 @@ public class CombatService extends AbstractService {
                     }
                     @Override
                     protected boolean onRun(long durationLeft) {
-                        player.showBossBar(bossBarMap.get(uuid).name(zh.formatComponent(combat, FormatUtils.convertMillisecondToSecond(durationLeft))).progress((float) durationLeft / (float) duration));
+                        player.showBossBar(bossBarMap.get(uuid).name(zh.format(combat, FormatUtils.convertMillisecondToSecond(durationLeft))).progress((float) durationLeft / (float) duration));
                         return true;
                     }
                     @Override

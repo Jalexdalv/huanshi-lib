@@ -7,11 +7,11 @@ import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
 public class PlayerToggleCombatEvent extends Event {
-    private static final HandlerList HANDLER_LIST = new HandlerList();
+    protected static final HandlerList HANDLER_LIST = new HandlerList();
     @Getter
-    private final Player player;
+    protected final Player player;
     @Getter
-    private final boolean combating;
+    protected final boolean combating;
 
     public PlayerToggleCombatEvent(@NotNull Player player, boolean combating) {
         this.player = player;
