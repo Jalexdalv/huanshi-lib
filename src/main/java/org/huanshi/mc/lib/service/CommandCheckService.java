@@ -38,11 +38,10 @@ public class CommandCheckService extends AbstractService {
                 return new Cooldowner(false, cd) {
                     @Override
                     protected boolean onStart() {
-                        if (BukkitAPI.getPluginCommand(StringUtils.replaceOnce(StringUtils.split(message, " ")[0], "/", "")) != null) {
-                            return true;
+                        if (BukkitAPI.getPluginCommand(StringUtils.replaceOnce(StringUtils.split(message, " ")[0], "/", "")) == null) {
+                            player.sendMessage(unknownCommand);
                         }
-                        player.sendMessage(unknownCommand);
-                        return false;
+                        return true;
                     }
                     @Override
                     protected boolean onRun(long durationLeft) {
