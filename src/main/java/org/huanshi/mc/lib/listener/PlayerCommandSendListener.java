@@ -2,21 +2,13 @@ package org.huanshi.mc.lib.listener;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerCommandSendEvent;
-import org.huanshi.mc.framework.annotation.Autowired;
-import org.huanshi.mc.framework.listener.HuanshiListener;
-import org.huanshi.mc.lib.service.CommandService;
+import org.huanshi.mc.framework.api.BukkitAPI;
+import org.huanshi.mc.framework.listener.AbstractListener;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
-
-public class PlayerCommandSendListener extends HuanshiListener {
-    @Autowired
-    private CommandService commandService;
-
+public class PlayerCommandSendListener extends AbstractListener {
     @EventHandler
     public void onPlayerCommandSend(@NotNull PlayerCommandSendEvent playerCommandSendEvent) {
-        Collection<String> commands = playerCommandSendEvent.getCommands();
-        commands.clear();
-        commands.addAll(commandService.getHuanshiCommandNames(playerCommandSendEvent.getPlayer()));
+        playerCommandSendEvent.getCommands().removeIf(command -> BukkitAPI.getPluginCommand(command) == null);
     }
 }

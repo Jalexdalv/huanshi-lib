@@ -4,21 +4,21 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.huanshi.mc.framework.annotation.Autowired;
-import org.huanshi.mc.framework.listener.HuanshiListener;
+import org.huanshi.mc.framework.listener.AbstractListener;
 import org.huanshi.mc.lib.protocol.ClientCommandSender;
-import org.huanshi.mc.lib.service.CombatService;
+import org.huanshi.mc.lib.service.PlayerCombatService;
 import org.jetbrains.annotations.NotNull;
 
-public class PlayerDeathListener extends HuanshiListener {
+public class PlayerDeathListener extends AbstractListener {
     @Autowired
-    private CombatService combatService;
+    private PlayerCombatService playerCombatService;
     @Autowired
     private ClientCommandSender clientCommandSender;
 
     @EventHandler
     public void onPlayerDeath(@NotNull PlayerDeathEvent playerDeathEvent) {
         Player player = playerDeathEvent.getPlayer();
-        combatService.start(player);
+        playerCombatService.stop(player);
         clientCommandSender.autoRespawn(player);
     }
 }

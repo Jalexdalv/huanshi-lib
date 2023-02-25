@@ -4,10 +4,10 @@ import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.huanshi.mc.framework.HuanshiPlugin;
+import org.huanshi.mc.framework.AbstractPlugin;
 import org.huanshi.mc.framework.annotation.Autowired;
 import org.huanshi.mc.framework.api.BukkitAPI;
-import org.huanshi.mc.framework.service.HuanshiService;
+import org.huanshi.mc.framework.service.AbstractService;
 import org.huanshi.mc.framework.timer.Timer;
 import org.huanshi.mc.framework.utils.FormatUtils;
 import org.huanshi.mc.lib.Plugin;
@@ -21,20 +21,20 @@ import java.util.UUID;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class CombatService extends HuanshiService {
+public class PlayerCombatService extends AbstractService {
     @Autowired
     private Plugin plugin;
     @Autowired
     private MainConfig mainConfig;
     @Autowired
     private Zh zh;
-    protected long duration;
-    protected Component combat;
-    protected final Map<UUID, BossBar> bossBarMap = new ConcurrentHashMap<>();
-    protected final Map<UUID, Timer> timerMap = new WeakHashMap<>();
+    private long duration;
+    private Component combat;
+    private final Map<UUID, BossBar> bossBarMap = new ConcurrentHashMap<>();
+    private final Map<UUID, Timer> timerMap = new WeakHashMap<>();
 
     @Override
-    public void onLoad(@NotNull HuanshiPlugin huanshiPlugin) {
+    public void onLoad(@NotNull AbstractPlugin plugin) {
         duration = mainConfig.getLong("combat.duration");
         combat = zh.getComponent("combat");
     }

@@ -1,5 +1,5 @@
 package org.huanshi.mc.lib;
 
-import org.huanshi.mc.framework.HuanshiPlugin;
+import org.huanshi.mc.framework.AbstractPlugin;
 
-public class Plugin extends HuanshiPlugin {}
+public class Plugin extends AbstractPlugin {}

@@ -55,7 +55,7 @@
     <distributionManagement>
         <repository>
             <id>huanshi-lib</id>
-            <url>file://C:\Users\高一航\IdeaProjects\huanshi-lib</url>
+            <url>file://${project.basedir}</url>
         </repository>
     </distributionManagement>
 

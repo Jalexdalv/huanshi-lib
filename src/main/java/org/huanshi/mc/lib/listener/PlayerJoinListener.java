@@ -5,11 +5,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.huanshi.mc.framework.annotation.Autowired;
 import org.huanshi.mc.framework.api.BukkitAPI;
-import org.huanshi.mc.framework.listener.HuanshiListener;
+import org.huanshi.mc.framework.listener.AbstractListener;
 import org.huanshi.mc.lib.Plugin;
 import org.jetbrains.annotations.NotNull;
 
-public class PlayerJoinListener extends HuanshiListener {
+public class PlayerJoinListener extends AbstractListener {
     @Autowired
     private Plugin plugin;
 

@@ -7,9 +7,9 @@ import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
 public class PlayerBlockEvent extends Event {
-    protected static final HandlerList HANDLER_LIST = new HandlerList();
+    private static final HandlerList HANDLER_LIST = new HandlerList();
     @Getter
-    protected final Player player;
+    private final Player player;
 
     public PlayerBlockEvent(@NotNull Player player) {
         this.player = player;

@@ -1,3 +1,3 @@
 unknown-command: '<gradient:red:white>未知指令</gradient>'
 use-command-fast: '<gradient:red:white>指令发送的太快了</gradient>'
-combat: '<yellow>{0}秒</yellow> <gradient:red:white>后离开战斗状态</gradient>'
+combat: '<yellow>{0}秒</yellow> <red>后离开战斗状态</red>'
