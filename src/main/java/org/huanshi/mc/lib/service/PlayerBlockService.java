@@ -9,16 +9,16 @@ import org.huanshi.mc.lib.Plugin;
 import org.huanshi.mc.lib.event.PlayerBlockEvent;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerBlockService extends AbstractService {
     @Autowired
     private Plugin plugin;
-    private final Map<UUID, Boolean> blockMap = new ConcurrentHashMap<>();
+    private final Map<UUID, Boolean> blockMap = new HashMap<>();
 
-    public void check() {
+    public synchronized void check() {
         for (Player player : ImmutableList.copyOf(BukkitAPI.getOnlinePlayers())) {
             blockMap.compute(player.getUniqueId(), (uuid, blocking) -> {
                 if (!player.isBlocking()) {
@@ -32,11 +32,11 @@ public class PlayerBlockService extends AbstractService {
         }
     }
 
-    public void clear(@NotNull UUID uuid) {
+    public synchronized void clear(@NotNull UUID uuid) {
         blockMap.remove(uuid);
     }
 
-    public void clear(@NotNull Player player) {
+    public synchronized void clear(@NotNull Player player) {
         clear(player.getUniqueId());
     }
 }
