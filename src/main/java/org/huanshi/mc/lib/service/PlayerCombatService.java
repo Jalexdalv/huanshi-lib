@@ -31,7 +31,7 @@ public class PlayerCombatService extends AbstractBossBarService {
     }
 
     public void start(@NotNull Player player) {
-        start(player, true, false, duration, 0L, 500L, BossBar.Color.RED, BossBar.Overlay.PROGRESS,
+        start(player, true, true, duration, 0L, 500L, BossBar.Color.RED, BossBar.Overlay.PROGRESS,
             durationLeft -> zh.format(combat, FormatUtils.convertMillisecondToSecond(durationLeft)), null,
             () -> {
                 BukkitAPI.runTask(plugin, () -> BukkitAPI.callEvent(new PlayerToggleCombatEvent(player, true)));
