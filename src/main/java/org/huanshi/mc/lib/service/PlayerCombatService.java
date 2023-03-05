@@ -32,7 +32,7 @@ public class PlayerCombatService extends AbstractService {
     private Component combat;
     private TimerHelper timerHelper;
     private final Map<UUID, BossBar> bossBarMap = new HashMap<>();
-    private final Set<UUID> flights = new HashSet<>();
+    private final Set<UUID> flyPlayers = new HashSet<>();
 
     @Override
     public void onLoad(@NotNull AbstractPlugin plugin) {
@@ -48,7 +48,7 @@ public class PlayerCombatService extends AbstractService {
                 BukkitAPI.runTask(plugin, () -> BukkitAPI.callEvent(new PlayerToggleCombatEvent(player, true)));
                 if (player.getAllowFlight()) {
                     player.setAllowFlight(false);
-                    flights.add(uuid);
+                    flyPlayers.add(uuid);
                 }
                 bossBarMap.putIfAbsent(uuid, BossBar.bossBar(Component.empty(), 1.0F, BossBar.Color.RED, BossBar.Overlay.PROGRESS));
                 return true;
@@ -57,9 +57,9 @@ public class PlayerCombatService extends AbstractService {
                 return true;
             }, () -> {
                 BukkitAPI.runTask(plugin, () -> BukkitAPI.callEvent(new PlayerToggleCombatEvent(player, false)));
-                if (flights.contains(uuid)) {
+                if (flyPlayers.contains(uuid)) {
                     player.setAllowFlight(true);
-                    flights.remove(uuid);
+                    flyPlayers.remove(uuid);
                 }
                 player.hideBossBar(bossBarMap.get(uuid));
                 return true;
