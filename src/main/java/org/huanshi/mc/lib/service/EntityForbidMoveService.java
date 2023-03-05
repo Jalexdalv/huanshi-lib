@@ -1,7 +1,7 @@
 package org.huanshi.mc.lib.service;
 
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.Entity;
 import org.huanshi.mc.framework.AbstractPlugin;
 import org.huanshi.mc.framework.annotation.Autowired;
 import org.huanshi.mc.framework.service.AbstractService;
@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
-public class PlayerForbidMoveService extends AbstractService {
+public class EntityForbidMoveService extends AbstractService {
     @Autowired
     private Plugin plugin;
     private TimerHelper timerHelper;
@@ -21,12 +21,12 @@ public class PlayerForbidMoveService extends AbstractService {
         timerHelper = new TimerHelper(plugin);
     }
 
-    public void start(@NotNull Player player, long duration) {
-        Location location = player.getLocation();
-        timerHelper.start(player.getUniqueId(), true, true, duration, 0L, 250L, null, null, durationLeft -> {
-            Location newLocation = player.getLocation();
+    public void start(@NotNull Entity entity, long duration) {
+        Location location = entity.getLocation();
+        timerHelper.start(entity.getUniqueId(), true, true, duration, 0L, 250L, null, null, durationLeft -> {
+            Location newLocation = entity.getLocation();
             if (location.x() != newLocation.x() || location.y() != newLocation.y() || location.z() != newLocation.z()) {
-                player.teleportAsync(location);
+                entity.teleportAsync(location);
             }
             return true;
         }, null);
@@ -36,7 +36,7 @@ public class PlayerForbidMoveService extends AbstractService {
         timerHelper.stop(uuid);
     }
 
-    public void stop(@NotNull Player player) {
-        stop(player.getUniqueId());
+    public void stop(@NotNull Entity entity) {
+        stop(entity.getUniqueId());
     }
 }
